@@ -4,6 +4,10 @@
 - 👯 I’m looking to collaborate on Java projects...
 - 🤔 I’m looking for help with C# with Unity...
 - 📫 How to reach me: 205260017@firat.edu.tr / emreocell1219@gmail.com ...
+- ## 📫 How to Reach Me
+
+
+[![Linkedin Badge](https://img.shields.io/badge/utkuglsvn-follow%20on%20linkedin-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/emre-öcel-77714a221/)
 
 
 <img src="https://github-readme-stats.vercel.app/api?username=emreocell&&show_icons=true&title_color=ffffff&icon_color=bb2acf&text_color=daf7dc&bg_color=151515">
