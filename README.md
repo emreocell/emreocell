@@ -12,7 +12,7 @@
 
 ### Spotify Playing 🎧
 
-[<img src="https://<emreocell11.vercel.app>/api/spotify-playing" alt="Spotify Now Playing" width="350" />](https://open.spotify.com/user/<xdcgmqvo9sk964etaqbnp7fn5>)
+[<img src="https://<emreocell11.vercel.app>/api/spotify-playing" alt="Spotify Now Playing" width="350" />](https://open.spotify.com/user/xdcgmqvo9sk964etaqbnp7fn5)
 
 
 <img src="https://github-readme-stats.vercel.app/api?username=emreocell&&show_icons=true&title_color=ffffff&icon_color=bb2acf&text_color=daf7dc&bg_color=151515">
