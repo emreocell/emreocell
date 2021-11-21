@@ -1,8 +1,6 @@
 ### Hi there 👋
-- ##🔭 I’m currently student on Firat University...
-- ##🌱 I’m currently learning Java , C++ , C# and Python...
+-## 🔭I'm currently student on Firat University... 
 - ## 📫 How to Reach Me
-
 
 [![Linkedin Badge](https://img.shields.io/badge/emreocel-follow%20on%20linkedin-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/emre-öcel-77714a221/)
 20526007@firat.edu.tr / emreocell1219@gmail.com
