@@ -9,7 +9,7 @@
 [![Linkedin Badge](https://img.shields.io/badge/emreocel-follow%20on%20linkedin-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/emre-öcel-77714a221/)
 20526007@firat.edu.tr / emreocell1219@gmail.com
  ## 📚 Learning
- <code><img height="75" src="https://icon-library.com/icon/java-icon-images-0.html"></code>
+ <code><img height="75" src="https://www.flaticon.com/free-icon/java_152760"></code>
 
 <img src="https://github-readme-stats.vercel.app/api?username=emreocell&&show_icons=true&title_color=ffffff&icon_color=bb2acf&text_color=daf7dc&bg_color=151515">
 
