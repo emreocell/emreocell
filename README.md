@@ -10,3 +10,11 @@
 <img src="https://github-readme-stats.vercel.app/api?username=emreocell&&show_icons=true&title_color=ffffff&icon_color=bb2acf&text_color=daf7dc&bg_color=151515">
 <img  src="https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact&hide=html,css" alt="My Top Langs" />
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=emreocell&label=Profile%20views&color=0e75b6&style=flat" alt="emreocell" /> </p>
+
+
+
+
+
+
+
+| ![Sy's top languages](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&show_icons=true&title_color=f6c32c&icon_color=f6c32c&text_color=9f9f9f&bg_color=151515&count_private=true&layout=compact) |
