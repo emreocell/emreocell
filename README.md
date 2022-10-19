@@ -18,6 +18,9 @@
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=emreocell&label=Profile%20views&color=0e75b6&style=flat" alt="emreocell" /> </p>
 
 
+[![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=anuraghazra)](https://github.com/anuraghazra/github-readme-stats)
+
+
 
 
 
