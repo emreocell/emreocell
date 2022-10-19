@@ -12,7 +12,7 @@
 
 ![Emre Öcel's GitHub stats](https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&theme=midnight-purple)
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
 
  ![Sy's top languages](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&show_icons=true&title_color=f6c32c&icon_color=f6c32c&text_color=9f9f9f&bg_color=151515&count_private=true&layout=compact)
