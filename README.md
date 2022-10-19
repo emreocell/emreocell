@@ -10,6 +10,7 @@
 <h3 align="left">Game Tools:</h3>
 <p align="left"> <a href="https://unity.com/" target="_blank" rel="noreferrer"> <img src="https://img.icons8.com/nolan/64/unity.png" alt="unity" width="40" height="40"/> </a> </p>
 
+![Emre Öcel's GitHub stats](https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&theme=midnight-purple)
 ![GitHub Stats](https://github-readme-stats.vercel.app/api?username=emreocell&theme=great-gatsby)
 
  ![Sy's top languages](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&show_icons=true&title_color=f6c32c&icon_color=f6c32c&text_color=9f9f9f&bg_color=151515&count_private=true&layout=compact)
@@ -18,7 +19,9 @@
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=emreocell&label=Profile%20views&color=0e75b6&style=flat" alt="emreocell" /> </p>
 
 
-[![Emre Öcel's GitHub stats](https://github-readme-stats.vercel.app/api?username=emreocell)](https://github.com/anuraghazra/github-readme-stats)
+
+
+
 
 
 
