@@ -1,5 +1,5 @@
-<img height="300" widght="400" align="left" alt="bow" src="https://thumbs.gfycat.com/BareInferiorCaudata-max-1mb.gif">
-<img height="300" widght="300" align="right" alt="sword" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/927b82a0-6875-4cb8-b891-3317f2079e96/daaxgn7-0eb561d9-976d-455f-a795-381ad01a39fa.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzkyN2I4MmEwLTY4NzUtNGNiOC1iODkxLTMzMTdmMjA3OWU5NlwvZGFheGduNy0wZWI1NjFkOS05NzZkLTQ1NWYtYTc5NS0zODFhZDAxYTM5ZmEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ILrFuPxtvepiClPwthfnFT6hn12aCSXFE-THCc42O5U">
+<img height="400" widght="400" align="left" alt="bow" src="https://thumbs.gfycat.com/BareInferiorCaudata-max-1mb.gif">
+<img height="400" widght="400" align="right" alt="sword" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/927b82a0-6875-4cb8-b891-3317f2079e96/daaxgn7-0eb561d9-976d-455f-a795-381ad01a39fa.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzkyN2I4MmEwLTY4NzUtNGNiOC1iODkxLTMzMTdmMjA3OWU5NlwvZGFheGduNy0wZWI1NjFkOS05NzZkLTQ1NWYtYTc5NS0zODFhZDAxYTM5ZmEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ILrFuPxtvepiClPwthfnFT6hn12aCSXFE-THCc42O5U">
 
 
 
