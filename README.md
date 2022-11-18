@@ -1,7 +1,6 @@
- <img src="https://codemyui.com/wp-content/uploads/2017/09/rotate-pulsating-loading-animation.gif" >
-
 <h1 align="center">Hi 👋, I'm Emre Öcel</h1>
 <h3 align="left">Connect with me:</h3>
+<img align="right" alt="Coding" width="400" src="https://codemyui.com/wp-content/uploads/2017/09/rotate-pulsating-loading-animation.gif">
 <p align="left">
 <a href="https://linkedin.com/in/emre-öcel-77714a221" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="emre-öcel-77714a221" height="30" width="40" /></a>
 <a href="https://instagram.com/emre.ocell55" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" alt="emre.ocell55" height="30" width="40" /></a>
