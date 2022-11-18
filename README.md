@@ -1,6 +1,7 @@
 <h1 align="center">Hi 👋, I'm Emre Öcel</h1>
 <h3 align="left">Connect with me:</h3>
-<img align="right" alt="Coding" width="400" src="https://media.tenor.com/QjXyLjswew8AAAAC/loop.gif">
+<img align="right" alt="Coding" width="400" src="https://i.pinimg.com/originals/f2/67/45/f26745419c3a97768449ca8dcf8c85d1.gif">
+
  
 <p align="left">
 <a href="https://linkedin.com/in/emre-öcel-77714a221" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="emre-öcel-77714a221" height="30" width="40" /></a>
