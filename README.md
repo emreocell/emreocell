@@ -1,6 +1,6 @@
 <h1 align="center">Hi 👋, I'm Emre Öcel</h1>
 <h3 align="left">Connect with me:</h3>
-<img align="right" alt="Coding" width="400" src="https://i.pinimg.com/originals/f2/67/45/f26745419c3a97768449ca8dcf8c85d1.gif">
+<img align="right" alt="Coding" width="400" src="https://weandthecolor.com/wp-content/uploads/2017/02/1-Nicola-Gastaldi-Fish-eats-fish.gif">
 
  
 <p align="left">
