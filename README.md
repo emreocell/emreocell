@@ -1,3 +1,5 @@
+ <img align="left" src="https://codemyui.com/wp-content/uploads/2017/09/rotate-pulsating-loading-animation.gif" >
+
 <h1 align="center">Hi 👋, I'm Emre Öcel</h1>
 <h3 align="left">Connect with me:</h3>
 <p align="left">
