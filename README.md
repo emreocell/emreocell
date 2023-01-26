@@ -22,10 +22,18 @@
 
 
 
+<div class="container">
+   <div class="column-center">Column center</div>
+   <div class="column-left">Column left</div>
+   <div class="column-right">Column right</div>
+</div>
 
 
-
-
+<style>
+.column-left{ float: left; width: 33.333%; }
+.column-right{ float: right; width: 33.333%; }
+.column-center{ display: inline-block; width: 33.333%; }
+</style>
 
 
 
