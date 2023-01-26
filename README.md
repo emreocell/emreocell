@@ -23,9 +23,9 @@
 
 
 <div class="container">
-   <div class="column-center" style="float: left; width: 33.333%;">Column center</div>
-   <div class="column-left" style="float: right; width: 33.333%;">Column left</div>
-   <div class="column-right" style="display: inline-block; width: 33.333%;">Column right</div>
+   <div class="center" style="float: left; width: 33.333%;">Column center</div>
+   <div class="left" style="float: right; width: 33.333%;">Column left</div>
+   <div class="right" style="display: inline-block; width: 33.333%;">Column right</div>
 </div>
 
 
