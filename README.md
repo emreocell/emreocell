@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://raw.githubusercontent.com/emreocell/emreocell/master/name.svg" alt="Emre Öcel" />
+  <img src="https://raw.githubusercontent.com/emreocell/emreocell/master/name.svg" alt="Emre-Öcel" />
 </h1>
 
 <h3 align="left">Connect with me:</h3>
