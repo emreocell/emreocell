@@ -1,8 +1,10 @@
 <img height="400" widght="400" align="right" alt="sword" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/927b82a0-6875-4cb8-b891-3317f2079e96/daaxgn7-0eb561d9-976d-455f-a795-381ad01a39fa.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzkyN2I4MmEwLTY4NzUtNGNiOC1iODkxLTMzMTdmMjA3OWU5NlwvZGFheGduNy0wZWI1NjFkOS05NzZkLTQ1NWYtYTc5NS0zODFhZDAxYTM5ZmEuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ILrFuPxtvepiClPwthfnFT6hn12aCSXFE-THCc42O5U">
 
-<h1 align="center">Hi 👋, I'm Emre Öcel</h1>
-<h3 align="left">Connect with me:</h3>
+<h1 align="center">
+  <img src="https://raw.githubusercontent.com/emreocell/emreocell/master/name.svg" alt="Emre Öcel" />
+</h1>
 
+<h3 align="left">Connect with me:</h3>
 <p align="left">
 <a href="https://linkedin.com/in/emre-öcel-77714a221" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="emre-öcel-77714a221" height="30" width="40" /></a>
 <a href="https://instagram.com/emre.ocell55" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" alt="emre.ocell55" height="30" width="40" /></a>
@@ -16,25 +18,4 @@
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&theme=midnight-purple)
 
-
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=emreocell&label=Profile%20views&color=0e75b6&style=flat" alt="emreocell" /> </p>
-
-
-
-
-<div class="container">
-   <div class="center" style="float: left; width: 33.333%;">Column center</div>
-   <div class="left" style="float: right; width: 33.333%;">Column left</div>
-   <div class="right" style="display: inline-block; width: 33.333%;">Column right</div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
