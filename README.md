@@ -10,17 +10,17 @@
 
 ## 🌐 About Me
 
-- 💻 Full Stack Developer (Frontend + Backend)
-- ⚡ SEO odaklı hızlı ve dönüşüm getiren web siteleri geliştiriyorum
-- 🧠 Performance, UX ve Google sıralama optimizasyonuna odaklanıyorum
-- 📍 Samsun, Türkiye
+- 💻 Full Stack Developer (Frontend + Backend)  
+- ⚡ SEO odaklı hızlı ve dönüşüm getiren web siteleri geliştiriyorum  
+- 🧠 Performance, UX ve Google sıralama optimizasyonuna odaklanıyorum  
+- 📍 Samsun, Türkiye  
 
 ---
 
 ## 🚀 My Brand / Projects
 
 ### 🔗 Webioo - Web Tasarım & SEO
-👉 https://webioo.com.tr  
+👉 [https://webioo.com.tr](https://webioo.com.tr)  
 
 - Kurumsal web sitesi geliştirme  
 - E-ticaret sistemleri  
@@ -44,20 +44,20 @@
 
 ## 📊 GitHub Stats
 
-![Emre Öcel's GitHub stats](https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&theme=midnight-purple)
+![Emre Öcel's GitHub stats](https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&count_private=true&theme=midnight-purple&cache_seconds=86400)
 
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&theme=midnight-purple)
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact&theme=midnight-purple&cache_seconds=86400)
 
 ---
 
 ## 🔗 Connect With Me
 
 <p align="left">
-<a href="https://www.linkedin.com/in/emreocell/" target="blank">
+<a href="https://linkedin.com/in/emre-öcel-77714a221" target="_blank">
 <img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" height="30" width="40" />
 </a>
 
-<a href="https://www.instagram.com/emre.ocel/" target="blank">
+<a href="https://instagram.com/emre.ocell55" target="_blank">
 <img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" height="30" width="40" />
 </a>
 </p>
