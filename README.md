@@ -44,14 +44,26 @@
 
 ## 📊 GitHub Stats
 
+## 📊 GitHub Stats
+
 <div align="center">
+
+<!-- Genel Stats + Top Languages yan yana -->
+<img src="https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&count_private=true&theme=midnight-purple&hide_border=true" height="170" />
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact&theme=midnight-purple&hide_border=true&langs_count=8" height="170" />
+
+<!-- Streak Stats -->
+<img src="https://streak-stats.demolab.com?user=emreocell&theme=midnight-purple&hide_border=true" />
+
+<!-- Activity Graph (tam genişlik) -->
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=emreocell&theme=tokyo-night&hide_border=true&area=true" width="100%" />
+
+<!-- Profile Summary Cards -->
 <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=emreocell&theme=2077" />
 <img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=emreocell&theme=2077" />
 <img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=emreocell&theme=2077" />
 <img src="https://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=emreocell&theme=2077&utcOffset=3" />
-</div>
-<div align="center">
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=emreocell&theme=2077" width="100%" />
+
 </div>
 
 ---
