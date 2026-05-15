@@ -15,7 +15,7 @@ role       : Full Stack Developer
 company    : Webioo (webioo.com.tr)
 focus      : SEO • Web Performance • CRO
 languages  : Turkish TR | English EN
-` ``
+```
 
 ---
 
@@ -97,6 +97,3 @@ languages  : Turkish TR | English EN
 </p>
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6A0DAD&height=80&section=footer" />
-```
-
----
