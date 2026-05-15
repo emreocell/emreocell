@@ -44,9 +44,16 @@
 
 ## 📊 GitHub Stats
 
-![Emre Öcel's GitHub stats](https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&count_private=true&theme=midnight-purple&cache_seconds=86400)
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact&theme=midnight-purple&cache_seconds=86400)
+<p align="center">
+  <a href="https://github.com/emreocell">
+    <img src="https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&count_private=true&theme=midnight-purple&hide_border=true" />
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/emreocell">
+    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact&theme=midnight-purple&hide_border=true" />
+  </a>
+</p>
 
 ---
 
