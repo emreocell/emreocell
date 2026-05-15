@@ -62,15 +62,15 @@
 <p align="left">
 
 <a href="https://emreocell.github.io" target="_blank">
-<span style="font-size:30px">🌍</span>
+<img src="https://cdn.simpleicons.org/githubpages/white" height="30" width="30" />
 </a>
-
+&nbsp;
 <a href="https://www.linkedin.com/in/emreocell/" target="_blank">
-<img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" height="30" width="40" />
+<img src="https://cdn.simpleicons.org/linkedin/0A66C2" height="30" width="30" />
 </a>
-
+&nbsp;
 <a href="https://instagram.com/emre.ocel" target="_blank">
-<img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" height="30" width="40" />
+<img src="https://cdn.simpleicons.org/instagram/E4405F" height="30" width="30" />
 </a>
 
 </p>
