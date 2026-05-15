@@ -7,7 +7,6 @@
 
 
 ## 🧑‍💻 About Me
-<img width="100%" src="https://capsule-render.vercel.app/api?type=shark&color=6A0DAD&height=30&section=footer" />
 
 ```yaml
 name       : Emre Öcel
@@ -18,7 +17,7 @@ focus      : Web Developer • SEO
 languages  : Turkish TR | English EN
 ```
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=shark&color=6A0DAD&height=30" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=soft&color=6A0DAD&height=10" />
 
 ## 🚀 Projects
 
