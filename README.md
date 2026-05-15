@@ -35,7 +35,7 @@ languages  : Turkish TR | English EN
 ## 🛠️ Tech Stack
 
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=html,css,js,php,mysql,bootstrap,wordpress,git&theme=dark" />
+  <img src="https://skillicons.dev/icons?i=html,css,js,php,mysql,bootstrap,git,java,cs,python&theme=dark" />
 </p>
 
 ---
