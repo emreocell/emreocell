@@ -16,7 +16,7 @@ location   : Samsun, Türkiye 📍
 role       : Full Stack Developer
 company    : Webioo (webioo.com.tr)
 focus      : SEO • Web Performance • CRO
-languages  : Turkish 🇹🇷 | English EN
+languages  : Turkish TR | English EN
 ```
 
 ---
