@@ -13,7 +13,7 @@ name       : Emre Öcel
 location   : Samsun, Türkiye 📍
 role       : Full Stack Developer
 company    : Webioo (webioo.com.tr)
-focus      : SEO • Web Performance • CRO
+focus      : Web Developer • SEO  
 languages  : Turkish TR | English EN
 ```
 
