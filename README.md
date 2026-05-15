@@ -17,7 +17,7 @@ focus      : Web Developer • SEO
 languages  : Turkish TR | English EN
 ```
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=soft&color=6A0DAD&height=3" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=slice&color=6A0DAD&height=30&section=header" />
 
 ## 🚀 Projects
 
@@ -30,7 +30,7 @@ languages  : Turkish TR | English EN
 - SEO & performans optimizasyonu
 - Landing page conversion artırma
 
----
+<img width="100%" src="https://capsule-render.vercel.app/api?type=slice&color=6A0DAD&height=30&section=header" />
 
 ## 🛠️ Tech Stack
 
@@ -38,7 +38,7 @@ languages  : Turkish TR | English EN
   <img src="https://skillicons.dev/icons?i=html,css,js,php,mysql,bootstrap,git,java,cs,python&theme=dark" />
 </p>
 
----
+<img width="100%" src="https://capsule-render.vercel.app/api?type=slice&color=6A0DAD&height=30&section=header" />
 
 ## 📊 GitHub Stats
 
@@ -63,7 +63,7 @@ languages  : Turkish TR | English EN
   </picture>
 </div>
 
----
+<img width="100%" src="https://capsule-render.vercel.app/api?type=slice&color=6A0DAD&height=30&section=header" />
 
 ## 🎯 Focus Areas
 
@@ -74,7 +74,7 @@ languages  : Turkish TR | English EN
   <img src="https://img.shields.io/badge/Conversion%20Rate%20Optimization-E74C3C?style=flat-square&logo=googleanalytics&logoColor=white" />
 </p>
 
----
+<img width="100%" src="https://capsule-render.vercel.app/api?type=slice&color=6A0DAD&height=30&section=header" />
 
 ## 🔗 Connect With Me
 
