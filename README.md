@@ -62,15 +62,15 @@
 <p align="left">
 
 <a href="https://emreocell.github.io" target="_blank">
-<img src="https://cdn.simpleicons.org/githubpages/white" height="30" width="30" />
+<img src="https://img.shields.io/badge/Portfolio-%23000000?style=for-the-badge&logo=firefox&logoColor=white" />
 </a>
-&nbsp;
+
 <a href="https://www.linkedin.com/in/emreocell/" target="_blank">
-<img src="https://cdn.simpleicons.org/linkedin/0A66C2" height="30" width="30" />
+<img src="https://img.shields.io/badge/LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
 </a>
-&nbsp;
+
 <a href="https://instagram.com/emre.ocel" target="_blank">
-<img src="https://cdn.simpleicons.org/instagram/E4405F" height="30" width="30" />
+<img src="https://img.shields.io/badge/Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white" />
 </a>
 
 </p>
