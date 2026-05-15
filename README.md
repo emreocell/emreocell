@@ -47,6 +47,8 @@
 <div align="center">
 <!-- Streak Stats -->
 <img src="https://streak-stats.demolab.com?user=emreocell&theme=midnight-purple&hide_border=true" />
+</div>
+<div align="center">
 <!-- Profile Summary Cards -->
 <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=emreocell&theme=2077" />
 <img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=emreocell&theme=2077" />
