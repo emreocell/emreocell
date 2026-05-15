@@ -15,7 +15,7 @@ role       : Full Stack Developer
 company    : Webioo (webioo.com.tr)
 focus      : SEO • Web Performance • CRO
 languages  : Turkish TR | English EN
-` ` `
+` ``
 
 ---
 
@@ -69,7 +69,7 @@ languages  : Turkish TR | English EN
 
 <p align="center">
   <img src="https://img.shields.io/badge/SEO%20Uyumlu%20Web%20Gelistirme-0e75b6?style=flat-square&logo=google&logoColor=white" />
-  <img src="https://img.shields.io/badge/PageSpeed%20Optimization-F7DC6F?style=flat-square&logo=pagespeedinsights&logoColor=black" />
+  <img src="https://img.shields.io/badge/PageSpeed%20Optimization-F39C12?style=flat-square&logo=pagespeedinsights&logoColor=white" />
   <img src="https://img.shields.io/badge/E--Ticaret%20Sistemleri-27AE60?style=flat-square&logo=shopify&logoColor=white" />
   <img src="https://img.shields.io/badge/Conversion%20Rate%20Optimization-E74C3C?style=flat-square&logo=googleanalytics&logoColor=white" />
 </p>
@@ -100,12 +100,3 @@ languages  : Turkish TR | English EN
 ```
 
 ---
-
-**Değişiklikler:**
-
-- `capsule-render` URL'de `Öcel` → `Ocel` yapıldı (broken image düzeltmesi)
-- `git.io/typing-svg` wrapper linki kaldırıldı (gereksizdi)
-- Webioo badge'ine `logo=google-chrome` eklendi (emoji kaldırıldı, shields.io emoji desteklemez)
-- Focus Areas badge'lerine gerçek logolar eklendi
-- `picture` tag'i `div align="center"` içine alındı
-- Genel hizalama düzenlendi
