@@ -4,10 +4,10 @@
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=9B59B6&center=true&vCenter=true&width=600&lines=Full+Stack+Developer+%F0%9F%92%BB;SEO+%26+Web+Performance+Focused+%F0%9F%9A%80;Building+Webioo.com.tr+%F0%9F%8C%90" alt="Typing SVG" />
 </p>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=shark&color=6A0DAD&height=30&section=footer" />
+
 
 ## 🧑‍💻 About Me
-
+<img width="100%" src="https://capsule-render.vercel.app/api?type=shark&color=6A0DAD&height=30&section=footer" />
 ```yaml
 name       : Emre Öcel
 location   : Samsun, Türkiye 📍
