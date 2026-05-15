@@ -1,4 +1,4 @@
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6A0DAD&height=120&section=header&text=Emre%20Ocel&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=Full%20Stack%20Developer%20%7C%20SEO%20%26%20Web%20Performance&descAlignY=60&descAlign=50" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6A0DAD&height=120&section=header&text=Emre+Ocel&fontSize=50&fontColor=fff&animation=fadeIn&fontAlignY=38&desc=Full+Stack+Developer+%7C+SEO+%26+Web+Performance&descAlignY=60&descAlign=50" />
 
 <p align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=9B59B6&center=true&vCenter=true&width=600&lines=Full+Stack+Developer+%F0%9F%92%BB;SEO+%26+Web+Performance+Focused+%F0%9F%9A%80;PageSpeed+%26+CRO+Specialist+%E2%9A%A1;Building+Webioo.com.tr+%F0%9F%8C%90" alt="Typing SVG" />
