@@ -97,4 +97,4 @@ languages  : Turkish TR | English EN
   <img src="https://komarev.com/ghpvc/?username=emreocell&label=Profile%20views&color=6A0DAD&style=flat-square" />
 </p>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6A0DAD&height=80&section=footer" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=6A0DAD&height=120&section=footer" />
