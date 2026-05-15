@@ -44,16 +44,21 @@
 
 ## 📊 GitHub Stats
 
-## 📊 GitHub Stats
+<p align="left">
 
-<div align="center">
-<!-- Streak Stats -->
-<img src="https://streak-stats.demolab.com?user=emreocell&theme=midnight-purple&hide_border=true" />
-<!-- Profile Summary Cards -->
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=emreocell&theme=2077" />
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=emreocell&theme=2077" />
+<a href="https://emreocell.github.io" target="_blank">
+<img src="https://img.shields.io/badge/🌐 Portfolio-emreocell.github.io-0e75b6?style=for-the-badge" />
+</a>
 
-</div>
+<a href="https://www.linkedin.com/in/emreocell/" target="_blank">
+<img src="https://img.shields.io/badge/LinkedIn-emreocell-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
+</a>
+
+<a href="https://instagram.com/emre.ocel" target="_blank">
+<img src="https://img.shields.io/badge/Instagram-emre.ocel-E4405F?style=for-the-badge&logo=instagram&logoColor=white" />
+</a>
+
+</p>
 
 ---
 
