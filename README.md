@@ -44,21 +44,16 @@
 
 ## 📊 GitHub Stats
 
-<p align="left">
+<div align="center">
+<!-- Streak Stats -->
+<img src="https://streak-stats.demolab.com?user=emreocell&theme=midnight-purple&hide_border=true" />
+</div>
 
-<a href="https://emreocell.github.io" target="_blank">
-<img src="https://img.shields.io/badge/🌐 Portfolio-emreocell.github.io-0e75b6?style=for-the-badge" />
-</a>
-
-<a href="https://www.linkedin.com/in/emreocell/" target="_blank">
-<img src="https://img.shields.io/badge/LinkedIn-emreocell-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
-</a>
-
-<a href="https://instagram.com/emre.ocel" target="_blank">
-<img src="https://img.shields.io/badge/Instagram-emre.ocel-E4405F?style=for-the-badge&logo=instagram&logoColor=white" />
-</a>
-
-</p>
+<div align="center">
+<!-- Profile Summary Cards -->
+<img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=emreocell&theme=2077" />
+<img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=emreocell&theme=2077" />
+</div>
 
 ---
 
@@ -66,13 +61,13 @@
 
 <p align="left">
 <a href="https://emreocell.github.io" target="_blank">
-<img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/rss.svg" height="30" width="40" />
+<img src="https://cdn.simpleicons.org/githubpages/white" height="30" width="40" />
 </a>
 <a href="https://www.linkedin.com/in/emreocell/" target="_blank">
-<img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" height="30" width="40" />
+<img src="https://cdn.simpleicons.org/linkedin/0A66C2" height="30" width="40" />
 </a>
 <a href="https://instagram.com/emre.ocel" target="_blank">
-<img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" height="30" width="40" />
+<img src="https://cdn.simpleicons.org/instagram/E4405F" height="30" width="40" />
 </a>
 </p>
 
