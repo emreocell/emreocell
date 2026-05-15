@@ -45,14 +45,7 @@
 ## 📊 GitHub Stats
 
 <p align="center">
-  <a href="https://github.com/emreocell">
-    <img src="https://github-readme-stats.vercel.app/api?username=emreocell&show_icons=true&count_private=true&theme=midnight-purple&hide_border=true" />
-  </a>
-</p>
-<p align="center">
-  <a href="https://github.com/emreocell">
-    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=emreocell&layout=compact&theme=midnight-purple&hide_border=true" />
-  </a>
+  <img src="https://streak-stats.demolab.com?user=emreocell&theme=midnight-purple&hide_border=true" />
 </p>
 
 ---
