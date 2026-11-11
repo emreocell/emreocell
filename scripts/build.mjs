@@ -230,7 +230,7 @@ const readme = [
   '  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=' + version + '">',
   '  <img src="./dist/profile.svg?v=' + version + '" alt="' + escape(title + '. ' + description) + '" width="100%">',
   '</picture>', '',
-  '<p align="center"><a href="' + escape(config.contact.email) + '"><strong>Let’s talk ↗</strong></a>'
+  '<p align="center"><a href="' + escape(config.contact.email) + '"><strong>Let’s talk</strong></a>'
     + '&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' + escape(config.contact.linkedin) + '">LinkedIn</a>'
     + '&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' + escape(config.contact.website) + '">Webioo</a></p>', '',
   '</div>', '',
