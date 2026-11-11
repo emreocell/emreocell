@@ -1,0 +1,34 @@
+{
+  "login": "emreocell",
+  "name": "Emre Öcel",
+  "credential": "Computer Engineer",
+  "role": "Full Stack Developer",
+  "company": "Webioo",
+  "location": "Samsun, Türkiye",
+  "headline": ["Thoughtful interfaces.", "Capable systems."],
+  "bio": ["I build web products, AI agents", "and the systems behind them."],
+  "cta": {
+    "eyebrow": "Have something in mind?",
+    "title": "Let’s build it.",
+    "note": "IDEA → INTERFACE → SYSTEM"
+  },
+  "tools": [
+    { "slug": "php", "name": "PHP", "opticalScale": 1.4 },
+    { "slug": "mysql", "name": "MySQL", "opticalScale": 1.4 },
+    { "slug": "javascript", "name": "JavaScript" },
+    { "slug": "python", "name": "Python" },
+    { "slug": "rust", "name": "Rust" }
+  ],
+  "contact": {
+    "email": "mailto:emreocell1219@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/emreocell/",
+    "website": "https://webioo.com.tr/"
+  },
+  "palette": {
+    "ink": "#080F17",
+    "cloud": "#F3F7FA",
+    "powder": "#B9D9F1",
+    "muted": "#9DAFBF",
+    "quiet": "#637B90"
+  }
+}

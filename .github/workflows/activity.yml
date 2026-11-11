@@ -1,29 +1,53 @@
-name: Update Activity
+name: Refresh profile artwork
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '17 3 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'assets/**'
+      - 'profile.config.json'
+      - '.github/workflows/activity.yml'
 
-permissions:
-  contents: write
+permissions: {}
+
+concurrency:
+  group: profile-artwork-main
+  cancel-in-progress: false
 
 jobs:
-  activity:
+  refresh:
+    if: github.repository == 'emreocell/emreocell'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Check out current profile
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: main
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-      - name: Generate activity SVG
+      - name: Check activity validation
+        run: node --test scripts/activity.test.mjs
+      - name: Fetch verified activity snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          node scripts/build.mjs stats dist
-      - name: Commit and push changes
+        run: node scripts/activity.mjs
+      - name: Render profile artwork
+        run: node scripts/build.mjs
+      - name: Publish refreshed artwork
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/stats.svg
-          git diff --staged --quiet || (git commit -m "Update activity statistics [skip ci]" && git push)
+          git add data/activity.json dist/profile.svg dist/profile-mobile.svg README.md
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh profile activity [skip ci]"
+            git push origin HEAD:main
+          fi
