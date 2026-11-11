@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-label="Emre Öcel — Full stack engineer">
+<title>Emre Öcel — Full stack engineer</title>
+<defs>
+  <linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A0A0B"/><stop offset=".55" stop-color="#0D0E10"/><stop offset="1" stop-color="#121316"/></linearGradient>
+  <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1EC"/><stop offset="1" stop-color="#C3CAD0"/></linearGradient>
+  <radialGradient id="vig" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
+  <filter id="blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="169"/></filter>
+  <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".82" numOctaves="3" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".62"/></feComponentTransfer></filter>
+</defs>
+<style>
+  .s{font-family:'Inter','Segoe UI Variable Display','Segoe UI','SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif} .m{font-family:'JetBrains Mono','SF Mono','Cascadia Code',Menlo,Consolas,monospace;letter-spacing:.22em;text-transform:uppercase}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  @keyframes ring{0%{r:6;opacity:.7}100%{r:22;opacity:0}}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .pulse{animation:pulse 2.4s ease-in-out infinite} .ring{animation:ring 2.4s ease-out infinite} .blink{animation:blink 1.1s step-end infinite}
+</style>
+<rect width="1600" height="900" fill="url(#base)"/>
+<g filter="url(#blur)"><ellipse cx="1260" cy="110" rx="560" ry="300" fill="#3A4048" opacity="0.95"/><ellipse cx="1480" cy="800" rx="420" ry="250" fill="#E4EBF0" opacity="0.3"/><ellipse cx="760" cy="1000" rx="640" ry="230" fill="#2C3137" opacity="1"/><ellipse cx="110" cy="60" rx="400" ry="210" fill="#24282D" opacity="0.9"/><ellipse cx="1060" cy="480" rx="220" ry="130" fill="#F1F5F8" opacity="0.13"/><ellipse cx="420" cy="520" rx="320" ry="200" fill="#0A0A0B" opacity="0.9"/></g>
+<rect width="1600" height="900" fill="url(#vig)"/>
+<rect width="1600" height="900" filter="url(#grain)" opacity=".5" style="mix-blend-mode:overlay"/>
+<rect width="1600" height="900" filter="url(#grain)" opacity=".06"/>
+
+<path d="M23 32h18M32 23v18" stroke="#E4EBF0" stroke-opacity=".38"/><path d="M1559 32h18M1568 23v18" stroke="#E4EBF0" stroke-opacity=".38"/><path d="M23 868h18M32 859v18" stroke="#E4EBF0" stroke-opacity=".38"/><path d="M1559 868h18M1568 859v18" stroke="#E4EBF0" stroke-opacity=".38"/>
+<text class="m" x="64" y="82" font-size="15" fill="#9AA2AA" text-anchor="start">Emre Öcel — Portfolio</text><text class="m" x="800" y="82" font-size="15" fill="#9AA2AA" text-anchor="middle">Index · 2026</text><text class="m" x="1536" y="82" font-size="15" fill="#9AA2AA" text-anchor="end">Samsun, TR · 41.29°N 36.33°E</text>
+<line x1="64" y1="112" x2="1536" y2="112" stroke="#FFFFFF" stroke-opacity="0.12"/>
+<text class="s" x="50" y="430" font-size="300" font-weight="800" letter-spacing="-14" fill="url(#ink)">Emre</text>
+<text class="s" x="50" y="738" font-size="300" font-weight="800" letter-spacing="-14" fill="none" stroke="#E4EBF0" stroke-opacity=".85" stroke-width="2">Öcel</text>
+<text class="m" x="1010" y="206" font-size="14" fill="#6B737B" text-anchor="start">( 01 )  About</text>
+<g class="s" font-size="33" fill="#F3F1EC">
+  <text x="1008" y="268">Full stack engineer building</text>
+  <text x="1008" y="316">local-first AI tools, real-time</text>
+  <text x="1008" y="364">communication and fast,</text>
+  <text x="1008" y="412">search-friendly web products.</text>
+</g>
+<text class="m" x="1010" y="480" font-size="14" fill="#9AA2AA" text-anchor="start">Now → Praxi-Bot · JARVIS</text><rect class="blink" x="1294" y="466" width="9" height="17" fill="#E4EBF0"/>
+<line x1="64" y1="792" x2="1536" y2="792" stroke="#FFFFFF" stroke-opacity="0.12"/>
+<text class="m" x="64" y="834" font-size="13" fill="#6B737B" text-anchor="start">Role</text><text class="s" x="64" y="870" font-size="23" fill="#F3F1EC">Full Stack Engineer</text>
+<text class="m" x="450" y="834" font-size="13" fill="#6B737B" text-anchor="start">Focus</text><text class="s" x="450" y="870" font-size="23" fill="#F3F1EC">AI agents · Realtime · Web</text>
+<text class="m" x="836" y="834" font-size="13" fill="#6B737B" text-anchor="start">Education</text><text class="s" x="836" y="870" font-size="23" fill="#F3F1EC">Computer Eng. — Fırat Univ.</text>
+<text class="m" x="1222" y="834" font-size="13" fill="#6B737B" text-anchor="start">Status</text>
+<circle class="ring" cx="1230" cy="862" r="6" fill="none" stroke="#E4EBF0"/><circle class="pulse" cx="1230" cy="862" r="5" fill="#E4EBF0"/>
+<text class="s" x="1250" y="870" font-size="23" fill="#F3F1EC">Open to collaborate</text>
+</svg>

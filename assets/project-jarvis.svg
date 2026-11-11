@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="360" viewBox="0 0 1600 360" role="img" aria-label="JARVIS — Windows-focused personal AI assistant with voice, a desktop UI, long-term memory, routines and local automation.">
+<title>JARVIS — Windows-focused personal AI assistant with voice, a desktop UI, long-term memory, routines and local automation.</title>
+<defs>
+  <linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A0A0B"/><stop offset=".55" stop-color="#0D0E10"/><stop offset="1" stop-color="#121316"/></linearGradient>
+  <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1EC"/><stop offset="1" stop-color="#C3CAD0"/></linearGradient>
+  <radialGradient id="vig" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.5"/></radialGradient>
+  <filter id="blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="91"/></filter>
+  <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".82" numOctaves="3" seed="22" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".62"/></feComponentTransfer></filter>
+</defs>
+<style>
+  .s{font-family:'Inter','Segoe UI Variable Display','Segoe UI','SF Pro Display','Helvetica Neue',Helvetica,Arial,sans-serif} .m{font-family:'JetBrains Mono','SF Mono','Cascadia Code',Menlo,Consolas,monospace;letter-spacing:.22em;text-transform:uppercase}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  @keyframes ring{0%{r:6;opacity:.7}100%{r:22;opacity:0}}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .pulse{animation:pulse 2.4s ease-in-out infinite} .ring{animation:ring 2.4s ease-out infinite} .blink{animation:blink 1.1s step-end infinite}
+</style>
+<rect width="1600" height="360" fill="url(#base)"/>
+<g filter="url(#blur)"><ellipse cx="300" cy="0" rx="520" ry="200" fill="#383E46" opacity="0.9"/><ellipse cx="1450" cy="360" rx="460" ry="170" fill="#2C3137" opacity="0.9"/><ellipse cx="1100" cy="120" rx="240" ry="120" fill="#E4EBF0" opacity="0.12"/></g>
+<rect width="1600" height="360" fill="url(#vig)"/>
+<rect width="1600" height="360" filter="url(#grain)" opacity=".5" style="mix-blend-mode:overlay"/>
+<rect width="1600" height="360" filter="url(#grain)" opacity=".06"/>
+
+<line x1="0" y1="1" x2="1600" y2="1" stroke="#FFFFFF" stroke-opacity="0.08"/>
+<text class="s" x="44" y="292" font-size="250" font-weight="800" letter-spacing="-12" fill="none" stroke="#E4EBF0" stroke-opacity=".22" stroke-width="1.5">02</text>
+<text class="m" x="340" y="82" font-size="14" fill="#6B737B" text-anchor="start">02 / 04</text><text class="m" x="1536" y="82" font-size="14" fill="#6B737B" text-anchor="end">Personal AI assistant · Windows</text>
+<text class="s" x="336" y="168" font-size="72" font-weight="700" letter-spacing="-2" fill="url(#ink)">JARVIS</text>
+<g class="s" font-size="25" fill="#9AA2AA"><text x="340" y="218">Windows-focused personal AI assistant with voice, a desktop UI,</text><text x="340" y="254">long-term memory, routines and local automation.</text></g>
+<text class="m" x="340" y="308" font-size="14" fill="#828A92" text-anchor="start">Python  /  Voice  /  Memory  /  Automation</text>
+<text class="m" x="1536" y="308" font-size="14" fill="#F3F1EC" text-anchor="end">View repository  ↗</text><line x1="1270" y1="320" x2="1536" y2="320" stroke="#FFFFFF" stroke-opacity="0.35"/>
+</svg>
