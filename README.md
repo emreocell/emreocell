@@ -2,8 +2,8 @@
 <div align="center">
 
 <picture>
-  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=a5e69efa1a88">
-  <img src="./dist/profile.svg?v=a5e69efa1a88" alt="Emre Öcel — Full Stack Developer at Webioo. I build web products, AI agents and the systems behind them. Toolkit: PHP, MySQL, JavaScript, Python, Rust. 475 GitHub contributions in the last 365 days. Snapshot: 13 NOV 2026 · 11:11 UTC." width="100%">
+  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=71528210ca6a">
+  <img src="./dist/profile.svg?v=71528210ca6a" alt="Emre Öcel — Full Stack Developer at Webioo. I build web products, AI agents and the systems behind them. Toolkit: PHP, MySQL, JavaScript, Python, Rust. 486 GitHub contributions in the last 365 days. Snapshot: 14 NOV 2026 · 10:37 UTC." width="100%">
 </picture>
 
 <p align="center"><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
@@ -20,8 +20,8 @@ I build web products, AI agents and the systems behind them.
 
 **A focused toolkit:** PHP · MySQL · JavaScript · Python · Rust.
 
-**GitHub activity:** 475 contributions from 2025-11-14 through 2026-11-13.<br>
-Last successful refresh: 13 NOV 2026 · 11:11 UTC. Activity refreshes daily.<br>
+**GitHub activity:** 486 contributions from 2025-11-15 through 2026-11-14.<br>
+Last successful refresh: 14 NOV 2026 · 10:37 UTC. Activity refreshes daily.<br>
 [View activity on GitHub](https://github.com/emreocell?tab=overview)
 
 </details>
