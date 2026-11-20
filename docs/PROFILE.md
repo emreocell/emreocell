@@ -7,10 +7,10 @@ slices. Most of it is one image (the top block with name, toolkit, activity and 
 header, `dist/profile.svg`); it is cut only where something has to be clickable:
 
 - each project is one row: its logo, name and repository on the left, and one pill button per
-  merged pull request (git-merge icon and number) right-aligned in up to four equal cells
-  (`dist/panel/*-prN.*.svg`). The cells are percentages of the width (13.5% each plus a 5.6% edge), so
+  merged pull request (git-merge icon and number) right-aligned in up to five equal cells
+  (`dist/panel/*-prN.*.svg`). The cells are percentages of the width (12% each plus a 5.6% edge), so
   desktop and mobile cut them identically. More than four PRs wrap to further rows, split evenly
-  (five become 3 + 2). Descriptions are intentionally absent: with several PRs per project there is
+  (six become 3 + 3). Descriptions are intentionally absent: with several PRs per project there is
   no room for them, and the repository name carries the context;
 - the "Browse all merged PRs" strip and the three contact buttons (Let's talk, LinkedIn, the
   company wordmark) at the bottom.

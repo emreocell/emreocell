@@ -346,20 +346,21 @@ function topBlock(P) {
 // cut from, so it is identical on desktop and mobile (the cells are percentages of the width).
 // Open-source rows: the name cell on the left, then SLOTS equal pill cells, then a right edge, all
 // percentages of the width so desktop and mobile cut the same cells. More PRs than slots wrap to
-// further rows, split evenly (5 PRs become 3 + 2).
-const SLOTS = 4, CELL = 13.5, EDGE = 5.6;
+// further rows, split evenly (6 PRs become 3 + 3).
+const SLOTS = 5, CELL = 12, EDGE = 5.6;
 const mergeIcon = (x, y, size, color = C.powder) => group({ transform: 'translate(' + x + ' ' + y + ') scale(' + size / 16 + ')',
   fill: 'none', stroke: color, 'stroke-width': 1.7, 'stroke-linecap': 'round' }, [
   tag('circle', { cx: 4, cy: 3, r: 2 }), tag('circle', { cx: 4, cy: 13, r: 2 }), tag('circle', { cx: 12, cy: 8, r: 2 }),
   path({ d: 'M4 5V11M4 5C4 7.6 6.6 8 10 8' }),
 ].join(''));
 function prPill(x, y, w, h, number, m) {
-  const size = m ? 15 : 21, icon = m ? 11 : 16, gap = m ? 5 : 10, arrowSize = m ? 0 : 12;
-  const content = icon + gap + measure('#' + number, size, 650) + (arrowSize ? 10 + arrowSize : 0);
+  // Desktop: git-merge icon, number and arrow. Mobile cells are narrow, so only a larger number.
+  const size = m ? 16 : 20, icon = m ? 0 : 15, gap = 8, arrowSize = m ? 0 : 11;
+  const content = (icon ? icon + gap : 0) + measure('#' + number, size, 650) + (arrowSize ? gap + arrowSize : 0);
   const left = x + (w - content) / 2, middle = y + h / 2;
   return rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .2 })
-    + mergeIcon(left, middle - icon / 2, icon)
-    + text(left + icon + gap, middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
+    + (icon ? mergeIcon(left, middle - icon / 2, icon) : '')
+    + text(left + (icon ? icon + gap : 0), middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
     + (arrowSize ? arrow(left + content - arrowSize, middle - arrowSize / 2, arrowSize) : '');
 }
 function contactButton(x, y, w, h, contact, m) {
@@ -401,9 +402,9 @@ function plan(mobile) {
   let first = true;
   for (const p of projects) {
     const rowCount = Math.ceil(p.prs.length / SLOTS), per = Math.ceil(p.prs.length / rowCount);
-    const nameLines = mobile ? wrap(p.name, nameSize, 600, nameW - textX - 8) : [p.name];
     for (let r = 0; r < rowCount; r++) {
       const chunk = p.prs.slice(r * per, (r + 1) * per), blank = SLOTS - chunk.length, infoW = nameW + blank * cellW;
+      const nameLines = mobile ? wrap(p.name, nameSize, 600, infoW - textX - 8) : [p.name]; // as wide as this row's free cells allow
       const rule = r === 0 && !first ? line(y, W, inset) : ''; // no rule under the header: the panel flows straight in
       const head = r === 0 ? logoTile(p, inset, y + (rowH - tile) / 2, tile)
         + nameLines.map((value, n) => text(textX, y + (nameLines.length > 1 ? 32 : (mobile ? 44 : 38)) + n * 22, value, nameSize, { 'font-weight': 600 })).join('')
