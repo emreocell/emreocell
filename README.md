@@ -10,6 +10,17 @@
 
 </div>
 
+<div align="center">
+<h3>Selected open-source contributions</h3>
+<p><sub>Meaningful improvements merged into projects outside my own repositories.</sub></p>
+<p><strong><a href="https://github.com/stablyai/orca">Orca</a></strong>&nbsp;·&nbsp;Model-catalog cache stability and WSL watcher diagnostics.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/stablyai/orca/pull/44637">#44637</a>&nbsp;·&nbsp;<a href="https://github.com/stablyai/orca/pull/44762">#44762</a></sub></p>
+<p><strong><a href="https://github.com/The-PR-Agent/pr-agent">PR-Agent</a></strong>&nbsp;·&nbsp;Safer webhook automation and privacy-aware OpenAI logging.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/The-PR-Agent/pr-agent/pull/5022">#5022</a>&nbsp;·&nbsp;<a href="https://github.com/The-PR-Agent/pr-agent/pull/5023">#5023</a></sub></p>
+<p><strong><a href="https://github.com/awslabs/mcp">AWS MCP Servers</a></strong>&nbsp;·&nbsp;Cleanup of LibreOffice process trees on timeouts and cancellation.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/awslabs/mcp/pull/5123">#5123</a></sub></p>
+<p><strong><a href="https://github.com/repowise-dev/repowise">RepoWise</a></strong>&nbsp;·&nbsp;Hyperfine JSON benchmark support in evidence workflows.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/repowise-dev/repowise/pull/5887">#5887</a></sub></p>
+<p><strong><a href="https://github.com/ministackorg/ministack">Ministack</a></strong>&nbsp;·&nbsp;Cognito identity-provider validation to prevent invalid states.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/ministackorg/ministack/pull/2745">#2745</a>&nbsp;·&nbsp;<a href="https://github.com/ministackorg/ministack/pull/2746">#2746</a></sub></p>
+<p><sub><a href="https://github.com/search?q=author%3Aemreocell%20is%3Apr%20is%3Amerged%20-user%3Aemreocell&amp;type=pullrequests">Browse all merged PRs</a></sub></p>
+</div>
+
 <details>
 <summary>Profile in plain text</summary>
 

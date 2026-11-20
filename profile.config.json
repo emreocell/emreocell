@@ -19,6 +19,13 @@
     { "slug": "python", "name": "Python" },
     { "slug": "rust", "name": "Rust" }
   ],
+  "openSource": [
+    {"repository":"stablyai/orca","name":"Orca","summary":"Model-catalog cache stability and WSL watcher diagnostics.","prs":[44637,44762]},
+    {"repository":"The-PR-Agent/pr-agent","name":"PR-Agent","summary":"Safer webhook automation and privacy-aware OpenAI logging.","prs":[5022,5023]},
+    {"repository":"awslabs/mcp","name":"AWS MCP Servers","summary":"Cleanup of LibreOffice process trees on timeouts and cancellation.","prs":[5123]},
+    {"repository":"repowise-dev/repowise","name":"RepoWise","summary":"Hyperfine JSON benchmark support in evidence workflows.","prs":[5887]},
+    {"repository":"ministackorg/ministack","name":"Ministack","summary":"Cognito identity-provider validation to prevent invalid states.","prs":[2745,2746]}
+  ],
   "contact": {
     "email": "mailto:emreocell1219@gmail.com",
     "linkedin": "https://www.linkedin.com/in/emreocell/",
