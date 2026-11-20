@@ -1,15 +1,24 @@
 # Profile artwork
 
-The profile is one continuous SVG composition with a separate mobile layout. GitHub selects the
-mobile SVG below a 680px viewport through the README's `picture` element. Below it sits a stack
-of open-source cards: one header, one card per merged pull request and a "browse all" card. Each
-pull-request card is its own image wrapped in a native link, so the merged-PR area is the part
-of the artwork that is clickable. The contact links are native README anchors too. A collapsed text
-version preserves all the information, including the pull-request links, as copyable text for
-readers who cannot use the artwork.
+The profile is one painted panel: a single virtual canvas with one grainy mesh gradient, a
+desktop layout (1200 px wide) and a separate mobile layout (640 px wide, selected below a 680px
+viewport through the README's `picture` elements). It is delivered as a stack of seamless SVG
+slices. Most of it is one image (the top block with name, toolkit, activity and the open-source
+header, `dist/profile.svg`); it is cut only where something has to be clickable:
 
-GitHub shows SVGs through `<img>`: text inside them cannot be selected and nothing can be layered
-on top of them. That is why only whole cards are links and why the plain-text section exists.
+- each merged pull request is a pill button (`dist/panel/*-pr0.svg`, `*-pr1.svg`), so a project with
+  two merged PRs shows two buttons side by side;
+- the "Browse all merged PRs" strip and the three contact buttons (Let's talk, LinkedIn, the
+  company wordmark) at the bottom.
+
+Every slice paints the same canvas (same mesh, same grain noise in the same coordinates), so the
+cuts are invisible. In the README the slices are inline images with `align="top"` and no
+whitespace or blank lines between them, so they touch exactly. A collapsed text version preserves
+all information, including every link, as copyable text.
+
+GitHub shows SVGs through `<img>`: text inside them cannot be selected, nothing can be layered on
+top of them and links inside an SVG are inert. That is why the buttons are separate images wrapped
+in native links, and why the plain-text section exists.
 
 ## Edit and build
 
@@ -21,23 +30,26 @@ node scripts/build.mjs
 ```
 
 Edit `profile.config.json` for identity, copy, palette, links, the five core tools and the
-open-source list (`openSource`: repository, display name, one-line summary, merged PR numbers).
-The two biography lines are joined on desktop and arranged separately on mobile. Keep copy concise
-and inspect both layouts after changing it. `opticalScale` balances wide logo shapes without
-altering their geometry. `companyLogo` names the wordmark in `assets/brand/` that replaces the
-company name in the role line. Layout and mesh drawing live in `scripts/build.mjs`.
+open-source list (`openSource`: repository, display name, one-line summary and one or two merged
+PR numbers). The two biography lines are joined on desktop and arranged separately on mobile. Keep
+copy concise and inspect both layouts after changing it. `opticalScale` balances wide logo shapes
+without altering their geometry. `companyLogo` names the wordmark in `assets/brand/` that
+replaces the company name in the role line and appears on the contact button. Layout and mesh
+drawing live in `scripts/build.mjs`.
 
 Text is measured offline with real Manrope advances from `assets/fonts/manrope-metrics.json`
-(for wrapping and for placing the wordmark right after "Full Stack Developer at"). To regenerate
-the metrics or re-trace a logo from a transparent PNG, see `scripts/tools/` (Python with
-`fonttools` and `brotli`, plus `opencv-python` for the trace); neither runs in CI.
+(for wrapping and for placing the wordmark right after "Full Stack Developer at"). The small
+slices embed `assets/fonts/manrope-panel.woff2` (ASCII, weights 500-650) and only the top block
+embeds the full font. To regenerate the metrics, the panel font, or to re-trace a logo from a
+transparent PNG, see `scripts/tools/` (Python with `fonttools` and `brotli`, plus `opencv-python`
+for the trace); none of it runs in CI.
 
 Generated files:
 
-- `dist/profile.svg` — 1200 × 1316 desktop composition.
-- `dist/profile-mobile.svg` — 640 × 1374 mobile composition.
-- `dist/open-source/*.svg` — desktop and `-mobile` cards (header, one per merged PR, browse all).
-- `README.md` — responsive images, the links around the cards and the text equivalent, all
+- `dist/profile.svg`, `dist/profile-mobile.svg` — the top block (the only slice that changes with
+  the daily refresh).
+- `dist/panel/*.svg` — every other slice, desktop and `-mobile`.
+- `README.md` — the slices in order, the links around the buttons and the text equivalent, all
   generated from the same configuration and activity snapshot.
 
 The SVGs embed their font, logo paths and wordmark. They need no JavaScript, external font

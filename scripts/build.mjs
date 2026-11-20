@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 // Offline, deterministic artwork. Refresh data with activity.mjs before building.
 //
-// One continuous profile composition (desktop + mobile) plus a stack of open-source cards.
-// GitHub renders SVGs through <img>, so text inside them is not selectable; the only parts that
-// must be interactive are the merged-PR cards, and each of those is its own image wrapped in a
-// native link. Text is measured with real Manrope advances (assets/fonts/manrope-metrics.json)
-// so wrapping and the Webioo logo placement are exact without a browser.
-import { readFileSync, mkdirSync, writeFileSync, renameSync } from 'node:fs';
+// The whole profile is ONE painted panel (a single virtual canvas with one grainy mesh
+// gradient) that is delivered as a stack of seamless SVG slices. Most of it is a single image;
+// it is only cut where something has to be clickable: each merged PR button and each contact
+// button is its own slice wrapped in a native link, so the interactive area is exactly that
+// button. Every slice paints the same canvas, so the cuts are invisible.
+//
+// Text is measured with real Manrope advances (assets/fonts/manrope-metrics.json), so wrapping
+// and the company wordmark placement are exact without a browser.
+import { readFileSync, mkdirSync, writeFileSync, renameSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -21,7 +24,10 @@ const nameLines = nameBreak < 0 ? [config.name, ''] : [config.name.slice(0, name
 const activity = validateActivity(JSON.parse(read('data/activity.json')));
 if (activity.login !== config.login) throw new Error('Activity and profile logins must match.');
 const C = config.palette;
-const font = readFileSync(join(root, 'assets/fonts/manrope-latin.woff2')).toString('base64');
+const fonts = {
+  full: readFileSync(join(root, 'assets/fonts/manrope-latin.woff2')).toString('base64'), // weights 400-800
+  panel: readFileSync(join(root, 'assets/fonts/manrope-panel.woff2')).toString('base64'), // ASCII, weights 500-650
+};
 const metrics = JSON.parse(read('assets/fonts/manrope-metrics.json'));
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;',
@@ -33,6 +39,7 @@ const tag = (name, attributes, content = null) => {
 const group = (attrs, body) => tag('g', attrs, body);
 const rect = attrs => tag('rect', attrs);
 const path = attrs => tag('path', attrs);
+const num = value => +value.toFixed(3);
 
 /** Width of `value` in px for Manrope at `weight` (kerning off, so draw it with NOKERN). */
 const measure = (value, size, weight = 500, tracking = 0) => {
@@ -77,27 +84,58 @@ const icons = config.tools.map(tool => {
   if (!match) throw new Error('Missing icon path: ' + tool.slug);
   return { ...tool, d: match[1] };
 });
-// The company wordmark replaces the company name in the role line (traced vector, assets/brand).
+// The company wordmark (traced vector, assets/brand) replaces the company name in the role line.
 const brandSource = read('assets/brand/' + config.companyLogo + '.svg');
 const brand = {
   d: brandSource.match(/ d="([^"]+)"/)[1],
-  ratio: Number(brandSource.match(/viewBox="0 0 (\d+) (\d+)"/)[1]) / Number(brandSource.match(/viewBox="0 0 (\d+) (\d+)"/)[2]),
   box: brandSource.match(/viewBox="0 0 (\d+) (\d+)"/).slice(1, 3).map(Number),
 };
-const wordmark = (x, baseline, height) => {
+const wordmark = (x, baseline, height, fill = C.cloud) => {
   const scale = height / brand.box[1];
   return group({ transform: 'translate(' + x.toFixed(2) + ' ' + (baseline - height).toFixed(2) + ') scale(' + scale.toFixed(5) + ')',
-    'aria-label': config.company }, path({ d: brand.d, 'fill-rule': 'evenodd', fill: C.cloud }));
+    'aria-label': config.company }, path({ d: brand.d, 'fill-rule': 'evenodd', fill }));
 };
+const wordmarkWidth = height => height * brand.box[0] / brand.box[1];
 
-function defs(width, height) {
+// ---- Projects -------------------------------------------------------------------------------
+
+const projects = config.openSource.map(entry => {
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(entry.repository)
+    || !entry.name || !entry.summary || !Array.isArray(entry.prs) || entry.prs.length < 1 || entry.prs.length > 2
+    || !entry.prs.every(n => Number.isInteger(n) && n > 0)) {
+    throw new Error('Invalid open-source contribution in profile.config.json (1 or 2 PRs per project).');
+  }
+  return {
+    ...entry, slug: entry.repository.replace('/', '-').toLowerCase(),
+    prs: entry.prs.map(number => ({ number, url: 'https://github.com/' + entry.repository + '/pull/' + number })),
+  };
+});
+const prTotal = projects.reduce((sum, p) => sum + p.prs.length, 0);
+const mergedSearchUrl = 'https://github.com/search?q='
+  + encodeURIComponent('author:' + config.login + ' is:pr is:merged -user:' + config.login)
+  + '&type=pullrequests';
+const contacts = [
+  { key: 'talk', label: 'Let’s talk', href: config.contact.email, primary: true },
+  { key: 'linkedin', label: 'LinkedIn', href: config.contact.linkedin },
+  { key: 'website', label: config.company, href: config.contact.website, logo: true },
+];
+
+// ---- Shared painting ------------------------------------------------------------------------
+
+function defs(w, h, corners, fontData) {
   const stop = (offset, color, opacity = 1) => tag('stop', {
     offset, 'stop-color': color, 'stop-opacity': opacity,
   });
   const radial = (id, stops) => tag('radialGradient', { id }, stops);
+  const R = 24, { tl = 0, tr = 0, bl = 0, br = 0 } = corners;
+  const r = k => k ? R : 0;
+  const clip = 'M0 ' + r(tl) + (tl ? 'A' + R + ' ' + R + ' 0 0 1 ' + R + ' 0' : '') + 'H' + num(w - r(tr))
+    + (tr ? 'A' + R + ' ' + R + ' 0 0 1 ' + num(w) + ' ' + R : '') + 'V' + num(h - r(br))
+    + (br ? 'A' + R + ' ' + R + ' 0 0 1 ' + num(w - R) + ' ' + num(h) : '') + 'H' + r(bl)
+    + (bl ? 'A' + R + ' ' + R + ' 0 0 1 0 ' + num(h - R) : '') + 'Z';
   return tag('defs', {}, [
-    tag('style', {}, '@font-face{font-family:Manrope;src:url(data:font/woff2;base64,' + font
-      + ') format("woff2");font-style:normal;font-weight:400 800;}text{font-kerning:normal;}'),
+    fontData ? tag('style', {}, '@font-face{font-family:Manrope;src:url(data:font/woff2;base64,' + fontData
+      + ') format("woff2");font-style:normal;font-weight:400 800;}text{font-kerning:normal;}') : '',
     radial('atmosphere', stop('0%', '#27435D', .65) + stop('55%', '#10283E', .35) + stop('100%', C.ink, 0)),
     radial('powder', stop('0%', '#CDE5F5') + stop('28%', '#9EC5E3', .92) + stop('62%', '#426C94', .68) + stop('100%', '#133756', 0)),
     radial('pearl', stop('0%', '#F4F6F7', .95) + stop('30%', '#D3E7F6', .85) + stop('70%', '#6D95B8', .38) + stop('100%', '#1D3B55', 0)),
@@ -113,58 +151,73 @@ function defs(width, height) {
       tag('feColorMatrix', { type: 'saturate', values: 0 }),
       tag('feComponentTransfer', {}, tag('feFuncA', { type: 'linear', slope: .7 })),
     ].join('')),
-    tag('clipPath', { id: 'canvas' }, rect({ width, height, rx: 24 })),
+    tag('clipPath', { id: 'canvas' }, path({ d: clip })),
   ].join(''));
 }
 
-/**
- * The grainy mesh gradient: blurred powder / pearl / blush blobs on ink, a left shade, a soft
- * bottom glow and two grain layers. `tx`, `ty`, `scale` choose which part of the mesh shows and
- * `flip` mirrors it. `zone` is how far down the left shade reaches, `fadeZone` where the mesh
- * fades into ink, so text columns stay readable.
- */
-function art(width, height, o = {}) {
-  const { tx = 60, ty = -55, scale = 1, flip = false, shade = .78, zone = height, fade = 1, fadeZone = height, glow = 1 } = o;
-  const place = (flip ? 'translate(' + width + ' 0) scale(-1 1) ' : '')
-    + 'translate(' + tx + ' ' + ty + ') scale(' + scale + ')';
-  const mesh = group({ transform: place }, [
-    tag('ellipse', { cx: 870, cy: 300, rx: 610, ry: 430, fill: 'url(#atmosphere)' }),
-    group({ filter: 'url(#blur)' }, [
-      tag('ellipse', { cx: 1105, cy: 245, rx: 405, ry: 450, transform: 'rotate(36 1105 245)', fill: 'url(#powder)' }),
-      tag('ellipse', { cx: 995, cy: 300, rx: 165, ry: 345, transform: 'rotate(43 995 300)', fill: 'url(#pearl)' }),
-      tag('ellipse', { cx: 1240, cy: 70, rx: 350, ry: 210, fill: 'url(#blush)' }),
-      tag('ellipse', { cx: 1080, cy: 600, rx: 410, ry: 150, transform: 'rotate(-28 1080 600)', fill: C.ink, opacity: .94 }),
-      path({ d: 'M1040 -100C710 62 832 232 1033 306C1180 360 1330 288 1360 560L1550 560L1550 -100Z', fill: C.ink, opacity: .94 }),
-      tag('ellipse', { cx: 860, cy: 490, rx: 175, ry: 100, fill: 'url(#powder)', opacity: .50 }),
-    ].join('')),
-  ].join(''));
-  return group({ 'clip-path': 'url(#canvas)' }, [
-    rect({ width, height, fill: C.ink }),
-    mesh,
-    shade ? rect({
-      width, height: zone, fill: 'url(#shade)', opacity: shade,
-      ...(flip ? { transform: 'translate(' + width + ' 0) scale(-1 1)' } : {}),
-    }) : '',
-    fade ? rect({ width, height: fadeZone, fill: 'url(#fade)', opacity: fade }) : '',
-    glow ? tag('ellipse', { cx: width * .89, cy: height + 40, rx: width * .65, ry: 330, fill: 'url(#bottom)', opacity: glow }) : '',
-    rect({ width, height, filter: 'url(#grain)', opacity: .52, style: 'mix-blend-mode:soft-light' }),
-    rect({ width, height, filter: 'url(#grain)', opacity: .07 }),
-  ].join(''));
+/** The grainy mesh gradient in the panel's virtual coordinates. */
+const mesh = placement => group({ transform: placement }, [
+  tag('ellipse', { cx: 870, cy: 300, rx: 610, ry: 430, fill: 'url(#atmosphere)' }),
+  group({ filter: 'url(#blur)' }, [
+    tag('ellipse', { cx: 1105, cy: 245, rx: 405, ry: 450, transform: 'rotate(36 1105 245)', fill: 'url(#powder)' }),
+    tag('ellipse', { cx: 995, cy: 300, rx: 165, ry: 345, transform: 'rotate(43 995 300)', fill: 'url(#pearl)' }),
+    tag('ellipse', { cx: 1240, cy: 70, rx: 350, ry: 210, fill: 'url(#blush)' }),
+    tag('ellipse', { cx: 1080, cy: 600, rx: 410, ry: 150, transform: 'rotate(-28 1080 600)', fill: C.ink, opacity: .94 }),
+    path({ d: 'M1040 -100C710 62 832 232 1033 306C1180 360 1330 288 1360 560L1550 560L1550 -100Z', fill: C.ink, opacity: .94 }),
+    tag('ellipse', { cx: 860, cy: 490, rx: 175, ry: 100, fill: 'url(#powder)', opacity: .50 }),
+  ].join('')),
+].join(''));
+
+/** One painting for the whole panel; each slice shows its own window of it. */
+function painting(P, win) {
+  const m = P.mobile;
+  return [
+    rect({ x: win.x0, y: win.y0, width: win.w, height: win.h, fill: C.ink }),
+    mesh(m ? 'translate(-250 20) scale(.94)' : 'translate(60 -55)'),
+    rect({ width: P.W, height: m ? 658 : 560, fill: 'url(#shade)', opacity: m ? .68 : .78 }),
+    rect({ width: P.W, height: m ? 678 : 590, fill: 'url(#fade)' }),
+    // a second, calmer glow behind the open-source rows
+    group({ opacity: .72 }, mesh('translate(' + (m ? -330 : 20) + ' ' + (P.rowsTop + (m ? 60 : 30)) + ') scale(' + (m ? .8 : 1) + ')')),
+    rect({ x: 0, y: P.rowsTop - 40, width: P.W, height: P.H - P.rowsTop + 40, fill: 'url(#shade)', opacity: m ? .5 : .42 }),
+    tag('ellipse', { cx: P.W * .89, cy: P.H + 40, rx: P.W * .65, ry: 330, fill: 'url(#bottom)' }),
+    rect({ x: win.x0, y: win.y0, width: win.w, height: win.h, filter: 'url(#grain)', opacity: .52, style: 'mix-blend-mode:soft-light' }),
+    rect({ x: win.x0, y: win.y0, width: win.w, height: win.h, filter: 'url(#grain)', opacity: .07 }),
+  ].join('');
 }
 
-/** An SVG document; `gap` adds transparent room below so stacked card images keep an even rhythm. */
-function render(width, height, content, { label: aria = '', gap = 0, desc = '' } = {}) {
+/** A seamless slice (x0, y0, w, h) of the panel, with its share of the outline and its content. */
+function slice(P, win, items, { label: aria = '', desc = '', fullFont = false } = {}) {
+  const { x0, y0, w, h } = win;
+  const R = 24, s = .5;
+  const left = x0 === 0, right = Math.abs(x0 + w - P.W) < .01, top = y0 === 0, bottom = Math.abs(y0 + h - P.H) < .01;
+  const corners = { tl: top && left, tr: top && right, bl: bottom && left, br: bottom && right };
+  const outline = [
+    left ? 'M' + s + ' ' + (corners.tl ? R : 0) + 'V' + num(h - (corners.bl ? R : 0)) : '',
+    right ? 'M' + num(w - s) + ' ' + (corners.tr ? R : 0) + 'V' + num(h - (corners.br ? R : 0)) : '',
+    top ? 'M' + (corners.tl ? R : 0) + ' ' + s + 'H' + num(w - (corners.tr ? R : 0)) : '',
+    bottom ? 'M' + (corners.bl ? R : 0) + ' ' + num(h - s) + 'H' + num(w - (corners.br ? R : 0)) : '',
+    corners.tl ? 'M' + s + ' ' + R + 'A' + (R - s) + ' ' + (R - s) + ' 0 0 1 ' + R + ' ' + s : '',
+    corners.tr ? 'M' + num(w - R) + ' ' + s + 'A' + (R - s) + ' ' + (R - s) + ' 0 0 1 ' + num(w - s) + ' ' + R : '',
+    corners.br ? 'M' + num(w - s) + ' ' + num(h - R) + 'A' + (R - s) + ' ' + (R - s) + ' 0 0 1 ' + num(w - R) + ' ' + num(h - s) : '',
+    corners.bl ? 'M' + R + ' ' + num(h - s) + 'A' + (R - s) + ' ' + (R - s) + ' 0 0 1 ' + s + ' ' + num(h - R) : '',
+  ].join('');
   return '<?xml version="1.0" encoding="UTF-8"?>\n' + tag('svg', {
-    xmlns: 'http://www.w3.org/2000/svg', width, height: height + gap, viewBox: '0 0 ' + width + ' ' + (height + gap),
+    xmlns: 'http://www.w3.org/2000/svg', width: num(w), height: num(h), viewBox: '0 0 ' + num(w) + ' ' + num(h),
     ...(aria ? { role: 'img', 'aria-label': aria } : { 'aria-hidden': 'true' }),
   }, [
     desc ? tag('title', {}, escape(aria)) + tag('desc', {}, escape(desc)) : '',
-    defs(width, height),
-    content,
-    rect({ x: .5, y: .5, width: width - 1, height: height - 1, rx: 23.5,
-      fill: 'none', stroke: C.cloud, 'stroke-opacity': .10 }),
+    defs(w, h, corners, items.includes('<text') ? (fullFont ? fonts.full : fonts.panel) : null),
+    group({ 'clip-path': 'url(#canvas)' }, group({ transform: 'translate(' + num(-x0) + ' ' + num(-y0) + ')' }, painting(P, win) + items)),
+    path({ d: outline, fill: 'none', stroke: C.cloud, 'stroke-opacity': .10 }),
   ].join('\n')) + '\n';
 }
+
+const arrow = (x, y, size, color = C.powder) => path({
+  d: 'M' + x + ' ' + (y + size) + 'L' + (x + size) + ' ' + y + 'M' + (x + size * .12) + ' ' + y + 'H' + (x + size) + 'V' + (y + size * .88),
+  fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+});
+
+// ---- Top block: the one-piece composition ---------------------------------------------------
 
 function toolkit(width, mobile, labelY, iconY, nameY) {
   const inset = mobile ? 40 : 64;
@@ -218,179 +271,171 @@ function roleLine(x, baseline, size, logoHeight) {
     + wordmark(x + textWidth + size * .34, baseline + logoHeight * .04, logoHeight);
 }
 
-function desktop() {
-  const width = 1200, height = 1316, inset = 64;
-  const cal = calendar(inset, 904, width - 2 * inset, false);
-  return render(width, height, [
-    art(width, height, { tx: 60, ty: -55, shade: .78, zone: 560, fadeZone: 590, glow: 1 }),
+function topBlock(P) {
+  const { W, mobile: m, inset } = P;
+  const cal = calendar(inset, m ? 986 : 904, W - 2 * inset, m);
+  const lowest = cal.bottom + (m ? 42 : 40);
+  const header = lowest + (m ? 38 : 37); // divider
+  const items = m ? [
+    label(inset, 58, config.credential.toUpperCase(), 19),
+    text(inset - 4, 178, nameLines[0], 108, { 'font-weight': 650, 'letter-spacing': -4.5 }),
+    text(inset - 4, 296, nameLines[1] + '.', 108, { 'font-weight': 650, 'letter-spacing': -4.5 }),
+    roleLine(inset, 350, 24, 22),
+    text(inset, 390, config.location, 21, { fill: C.muted }),
+    text(inset, 466, config.headline[0], 34, { 'font-weight': 500, 'letter-spacing': -1.1 }),
+    text(inset, 512, config.headline[1], 34, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.1 }),
+    ...config.bio.map((value, i) => text(inset, 570 + i * 33, value, 23, { fill: C.muted })),
+    line(648, W, inset),
+    toolkit(W, true, 694, 724, 802),
+    line(844, W, inset),
+    label(inset, 890, 'GITHUB ACTIVITY', 19),
+    text(inset - 2, 954, count, Math.min(64, 150 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
+    text(inset + 168, 930, 'contributions', 22, { fill: C.muted }),
+    text(inset + 168, 960, 'last 365 days', 22, { fill: C.muted }),
+    cal.svg,
+    text(inset, lowest, 'Updated ' + formatDate(activity.updatedAt) + ' · ' + activity.updatedAt.slice(11, 16) + ' UTC', 20, { fill: C.muted }),
+  ] : [
     label(inset, 66, config.credential.toUpperCase(), 17),
-    label(width - inset, 66, config.location.toUpperCase(), 17, { 'text-anchor': 'end' }),
+    label(W - inset, 66, config.location.toUpperCase(), 17, { 'text-anchor': 'end' }),
     text(inset - 5, 224, config.name + '.', 128, { 'font-weight': 650, 'letter-spacing': -6 }),
     roleLine(inset, 284, 23, 21),
     text(inset, 372, config.headline[0], 39, { 'font-weight': 500, 'letter-spacing': -1.2 }),
     text(inset, 421, config.headline[1], 39, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.2 }),
     text(inset, 484, bio, 20, { fill: C.muted }),
-    line(542, width, inset),
-    toolkit(width, false, 592, 626, 712),
-    line(752, width, inset),
+    line(542, W, inset),
+    toolkit(W, false, 592, 626, 712),
+    line(752, W, inset),
     label(inset, 802, 'GITHUB ACTIVITY', 17),
-    text(width - inset, 802, 'UPDATED ' + updated, 15, { 'text-anchor': 'end', fill: C.muted }),
+    text(W - inset, 802, 'UPDATED ' + updated, 15, { 'text-anchor': 'end', fill: C.muted }),
     text(inset - 2, 872, count, Math.min(58, 190 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
     text(inset + Math.max(139, Math.min(218, count.length * 38)), 864, 'contributions in the last 365 days', 21, { fill: C.muted }),
     cal.svg,
-    text(inset, cal.bottom + 40, range, 15, { fill: C.muted }),
-    line(1138, width, inset),
-    text(inset, 1190, config.cta.eyebrow, 21, { fill: C.muted }),
-    text(inset - 3, 1262, config.cta.title, 66, { 'font-weight': 600, 'letter-spacing': -2.2 }),
-    text(width - inset, 1256, config.cta.note, 16, {
-      'text-anchor': 'end', fill: C.powder, 'letter-spacing': 1,
-    }),
-  ].join(''), { label: title, desc: description });
+    text(inset, lowest, range, 15, { fill: C.muted }),
+  ];
+  items.push(
+    line(header, W, inset),
+    label(inset, header + (m ? 46 : 48), 'OPEN SOURCE · ' + prTotal + ' MERGED PRS · ' + projects.length + ' PROJECTS', 15),
+    text(inset - 1, header + (m ? 94 : 98), 'Selected contributions', m ? 36 : 40, { 'font-weight': 650, 'letter-spacing': -1 }),
+    text(inset, header + (m ? 126 : 132), 'Merged into projects beyond my own repositories.', m ? 18 : 19, { fill: C.muted, 'font-weight': 500 }),
+  );
+  return { items: items.join(''), height: Math.round(header + (m ? 158 : 166)) };
 }
 
-function mobile() {
-  const width = 640, height = 1374, inset = 40, d = 18; // d: extra room under the two-line name
-  const cal = calendar(inset, 968 + d, width - 2 * inset, true);
-  return render(width, height, [
-    art(width, height, { tx: -250, ty: 20, scale: .94, shade: .68, zone: 658, fadeZone: 678, glow: 1 }),
-    label(inset, 58, config.credential.toUpperCase(), 19),
-    text(inset - 4, 178, nameLines[0], 108, { 'font-weight': 650, 'letter-spacing': -4.5 }),
-    text(inset - 4, 178 + 118, nameLines[1] + '.', 108, { 'font-weight': 650, 'letter-spacing': -4.5 }),
-    roleLine(inset, 332 + d, 24, 22),
-    text(inset, 372 + d, config.location, 21, { fill: C.muted }),
-    text(inset, 448 + d, config.headline[0], 34, { 'font-weight': 500, 'letter-spacing': -1.1 }),
-    text(inset, 494 + d, config.headline[1], 34, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.1 }),
-    ...config.bio.map((value, i) => text(inset, 552 + d + i * 33, value, 23, { fill: C.muted })),
-    line(630 + d, width, inset),
-    toolkit(width, true, 676 + d, 706 + d, 784 + d),
-    line(826 + d, width, inset),
-    label(inset, 872 + d, 'GITHUB ACTIVITY', 19),
-    text(inset - 2, 936 + d, count, Math.min(64, 150 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
-    text(inset + 168, 912 + d, 'contributions', 22, { fill: C.muted }),
-    text(inset + 168, 942 + d, 'last 365 days', 22, { fill: C.muted }),
-    cal.svg,
-    text(inset, cal.bottom + 42, 'Updated ' + formatDate(activity.updatedAt) + ' · ' + activity.updatedAt.slice(11, 16) + ' UTC', 20, { fill: C.muted }),
-    line(1182 + d, width, inset),
-    text(inset, 1234 + d, config.cta.eyebrow, 24, { fill: C.muted }),
-    text(inset - 2, 1308 + d, config.cta.title, 62, { 'font-weight': 600, 'letter-spacing': -2 }),
-  ].join(''), { label: title, desc: description });
+// ---- Rows, call to action, contact buttons --------------------------------------------------
+
+// Merged-PR pill metrics. Mobile is tighter so a pill fits the 34% cell it is cut from.
+const pillSpec = m => m ? { label: 10.5, track: 1.4, number: 16.5, pad: 14, gap: 9, arrow: 10, height: 34 }
+  : { label: 12, track: 2, number: 21, pad: 20, gap: 14, arrow: 12, height: 42 };
+function pillWidth(m) {
+  const k = pillSpec(m);
+  const widest = Math.max(...projects.flatMap(p => p.prs.map(pr => measure('#' + pr.number, k.number, 650))));
+  return Math.ceil(k.pad + measure('MERGED', k.label, 500, k.track) + k.gap + widest + k.gap + k.arrow + k.pad);
+}
+function prPill(x, y, w, number, m) {
+  const k = pillSpec(m);
+  const merged = measure('MERGED', k.label, 500, k.track);
+  return rect({ x, y, width: w, height: k.height, rx: k.height / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .2 })
+    + label(x + k.pad, y + k.height / 2 + k.label * .38, 'MERGED', k.label, { 'letter-spacing': k.track, ...NOKERN })
+    + text(x + k.pad + merged + k.gap, y + k.height / 2 + k.number * .34, '#' + number, k.number, { 'font-weight': 650, ...NOKERN })
+    + arrow(x + w - k.pad - k.arrow, y + k.height / 2 - k.arrow / 2, k.arrow);
+}
+function contactButton(x, y, w, h, contact, m) {
+  const size = m ? 19 : 21;
+  const ink = contact.primary ? C.ink : C.cloud;
+  const shell = contact.primary
+    ? rect({ x, y, width: w, height: h, rx: h / 2, fill: C.cloud })
+    : rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .22 });
+  const content = contact.logo ? wordmarkWidth(size) : measure(contact.label, size, 600);
+  const total = content + 12 + 14, left = x + (w - total) / 2;
+  const middle = y + h / 2;
+  return shell + (contact.logo
+    ? wordmark(left, middle + size / 2, size, ink)
+    : text(left, middle + size * .36, contact.label, size, { fill: ink, 'font-weight': 600, ...NOKERN }))
+    + arrow(left + content + 12, middle - 7, 14, contact.primary ? C.ink : C.powder);
 }
 
-// ---- Open-source cards: every merged PR is one image wrapped in a native link. ----------------
-
-const pullRequests = config.openSource.flatMap(entry => {
-  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(entry.repository)
-    || !entry.name || !entry.summary || !Array.isArray(entry.prs) || !entry.prs.length
-    || !entry.prs.every(n => Number.isInteger(n) && n > 0)) {
-    throw new Error('Invalid open-source contribution in profile.config.json.');
+/** Plan the panel for one platform: every slice with its window, items and optional link. */
+function plan(mobile) {
+  const W = mobile ? 640 : 1200, inset = mobile ? 40 : 64;
+  const P = { W, mobile, inset, H: 0, rowsTop: 0 };
+  const top = topBlock(P);
+  P.rowsTop = top.height;
+  const pw = pillWidth(mobile);
+  const slices = [{ name: 'profile', win: { x0: 0, y0: 0, w: W, h: top.height }, items: top.items, w: '100%',
+    label: title, desc: description, daily: true }];
+  let y = top.height;
+  const nameSize = mobile ? 22 : 24, summarySize = mobile ? 17 : 18.5;
+  for (const p of projects) {
+    const lines = mobile ? wrap(p.summary, summarySize, 500, W - inset * 2) : [p.summary];
+    const infoH = mobile ? 74 + lines.length * 25 : 92, btnH = mobile ? 62 : 68;
+    slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: W, h: infoH }, w: '100%',
+      items: line(y, W, inset) + text(inset, y + 42, p.name, nameSize, { 'font-weight': 600 })
+        + lines.map((value, n) => text(inset, y + (mobile ? 74 : 72) + n * 25, value, summarySize, { fill: C.muted, 'font-weight': 500 })).join(''),
+      label: p.name + ' — ' + p.summary });
+    y += infoH;
+    const cell = W * .34, pillX = [inset === 40 ? 40 : inset, cell + (mobile ? 8 : 16)];
+    if (pillX[0] + pw > cell - 2) throw new Error('Merged-PR pill does not fit its cell.');
+    p.prs.forEach((pr, k) => {
+      const x0 = k * cell;
+      slices.push({ name: p.slug + '-pr' + k, win: { x0, y0: y, w: cell, h: btnH }, w: '34%',
+        items: prPill(pillX[k], y + 6, pw, pr.number, mobile), href: pr.url,
+        label: p.name + ' merged pull request #' + pr.number });
+    });
+    const used = p.prs.length * cell;
+    slices.push({ name: p.slug + '-rest', win: { x0: used, y0: y, w: W - used, h: btnH }, w: (100 - p.prs.length * 34) + '%',
+      items: '', label: '' });
+    y += btnH;
   }
-  return entry.prs.map(number => ({
-    name: entry.name, summary: entry.summary, number,
-    slug: entry.repository.replace('/', '-').toLowerCase() + '-' + number,
-    url: 'https://github.com/' + entry.repository + '/pull/' + number,
-  }));
-});
-const projectCount = new Set(config.openSource.map(e => e.repository)).size;
-const mergedSearchUrl = 'https://github.com/search?q='
-  + encodeURIComponent('author:' + config.login + ' is:pr is:merged -user:' + config.login)
-  + '&type=pullrequests';
-const arrow = (x, y, size) => path({
-  d: 'M' + x + ' ' + (y + size) + 'L' + (x + size) + ' ' + y + 'M' + (x + size * .12) + ' ' + y + 'H' + (x + size) + 'V' + (y + size * .88),
-  fill: 'none', stroke: C.powder, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
-});
-// Each card shows another part of the same mesh, always with the glow to the right so the text
-// column stays dark; only height, size and the exact spot vary.
-const cut = (i, width) => ({ tx: Math.round(width * (width < 800 ? 1.04 : .8) - 1105 + ((i * 83) % 120) - 60), ty: -230 - ((i * 53) % 120), scale: 1 + (i % 3) * .07 });
+  const browseH = mobile ? 68 : 76, browse = 'Browse all merged PRs on GitHub', bs = mobile ? 18 : 20;
+  slices.push({ name: 'browse-all', win: { x0: 0, y0: y, w: W, h: browseH }, w: '100%', href: mergedSearchUrl, label: browse,
+    items: line(y, W, inset) + text(inset, y + browseH / 2 + bs * .42, browse, bs, { fill: C.powder, 'font-weight': 600, ...NOKERN })
+      + arrow(inset + measure(browse, bs, 600) + 14, y + browseH / 2 - 7, 14) });
+  y += browseH;
+  const ctaH = mobile ? 214 : 196;
+  slices.push({ name: 'call-to-action', win: { x0: 0, y0: y, w: W, h: ctaH }, w: '100%', label: config.cta.eyebrow + ' ' + config.cta.title,
+    items: line(y, W, inset) + text(inset, y + (mobile ? 54 : 56), config.cta.eyebrow, mobile ? 24 : 21, { fill: C.muted, 'font-weight': 500 })
+      + text(inset - (mobile ? 2 : 3), y + 128, config.cta.title, mobile ? 62 : 66, { 'font-weight': 600, 'letter-spacing': mobile ? -2 : -2.2 })
+      + (mobile ? text(inset, y + 172, config.cta.note, 16, { fill: C.powder, 'font-weight': 500, 'letter-spacing': 1 })
+        : text(W - inset, y + 120, config.cta.note, 16, { 'text-anchor': 'end', fill: C.powder, 'font-weight': 500, 'letter-spacing': 1 })) });
+  y += ctaH;
+  const barH = mobile ? 104 : 130, bw = mobile ? 184 : 300, bh = mobile ? 52 : 56;
+  contacts.forEach((contact, k) => {
+    const cell = W / contacts.length, x0 = k * cell;
+    slices.push({ name: 'contact-' + contact.key, win: { x0, y0: y, w: cell, h: barH }, w: '33.3333%', href: contact.href,
+      label: contact.label, items: contactButton(x0 + (cell - bw) / 2, y + 8, bw, bh, contact, mobile) });
+  });
+  y += barH;
+  P.H = y;
+  return { P, slices };
+}
 
-function prCard(pr, i, mobile) {
-  const width = mobile ? 640 : 1200, pad = mobile ? 28 : 40;
-  const pill = (x, y, h) => {
-    const tracking = 2;
-    const merged = measure('MERGED', 12, 500, tracking);
-    const number = measure('#' + pr.number, mobile ? 19 : 21, 650);
-    const w = 20 + merged + 14 + number + 12 + 12 + 20;
-    const left = x - w;
-    return rect({ x: left, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .66,
-      stroke: C.cloud, 'stroke-opacity': .16 })
-      + label(left + 20, y + h / 2 + 4.5, 'MERGED', 12, { 'letter-spacing': tracking, ...NOKERN })
-      + text(left + 20 + merged + 14, y + h / 2 + 7, '#' + pr.number, mobile ? 19 : 21, { 'font-weight': 650, ...NOKERN })
-      + arrow(left + w - 20 - 12, y + h / 2 - 6, 12);
-  };
-  const alt = pr.name + ' — ' + pr.summary + ' Merged pull request #' + pr.number + '.';
-  if (!mobile) {
-    const height = 96;
-    return { alt, svg: render(width, height, [
-      art(width, height, { ...cut(i, width), shade: .96, glow: .3 }),
-      text(pad, 41, pr.name, 24, { 'font-weight': 600 }),
-      text(pad, 71, pr.summary, 18.5, { fill: C.muted, 'font-weight': 500 }),
-      pill(width - pad, 26, 44),
-    ].join(''), { label: alt, gap: 8 }) };
+// ---- Build ----------------------------------------------------------------------------------
+
+const outputs = {};
+const platforms = [false, true].map(plan);
+for (const { P, slices } of platforms) {
+  for (const s of slices) {
+    const file = s.daily ? 'dist/' + s.name : 'dist/panel/' + s.name;
+    outputs[file + (P.mobile ? '-mobile' : '') + '.svg'] = slice(P, s.win, s.items, { label: s.label, desc: s.desc, fullFont: !!s.daily });
   }
-  const lines = wrap(pr.summary, 17, 500, width - pad * 2 - 90); // keep text clear of the glow
-  const height = 78 + lines.length * 25 + 14;
-  return { alt, svg: render(width, height, [
-    art(width, height, { ...cut(i, width), shade: .97, glow: .3 }),
-    text(pad, 44, pr.name, 22, { 'font-weight': 600 }),
-    pill(width - pad, 18, 38),
-    ...lines.map((value, n) => text(pad, 82 + n * 25, value, 17, { fill: C.muted, 'font-weight': 500 })),
-  ].join(''), { label: alt, gap: 8 }) };
 }
-
-function ossHeader(mobile) {
-  const width = mobile ? 640 : 1200, height = mobile ? 150 : 148, pad = mobile ? 28 : 40;
-  const alt = 'Selected open-source contributions: ' + pullRequests.length + ' merged pull requests across '
-    + projectCount + ' projects.';
-  return { alt, svg: render(width, height, [
-    art(width, height, { tx: mobile ? -300 : -60, ty: -140, scale: 1.1, shade: .66, glow: .5 }),
-    label(pad, mobile ? 50 : 56, 'OPEN SOURCE', mobile ? 15 : 16),
-    text(pad - 1, mobile ? 94 : 104, 'Selected contributions', mobile ? 33 : 40, { 'font-weight': 650, 'letter-spacing': -1 }),
-    text(pad, mobile ? 125 : 134, 'Merged into projects beyond my own repositories.', mobile ? 17 : 18.5, { fill: C.muted, 'font-weight': 500 }),
-    ...(mobile ? [] : [
-      text(width - pad, 100, String(pullRequests.length), 56, { 'text-anchor': 'end', 'font-weight': 600, 'letter-spacing': -1.5 }),
-      label(width - pad, 128, 'MERGED PRS · ' + projectCount + ' PROJECTS', 13, { 'text-anchor': 'end' }),
-    ]),
-  ].join(''), { label: alt, gap: 8 }) };
-}
-
-function ossFooter(mobile) {
-  const width = mobile ? 640 : 1200, height = mobile ? 64 : 72;
-  const words = 'Browse all merged PRs on GitHub';
-  const size = mobile ? 18 : 20, w = measure(words, size, 600), x = (width - (w + 30)) / 2;
-  return { alt: words, svg: render(width, height, [
-    art(width, height, { tx: mobile ? -260 : 120, ty: -300, scale: 1.2, flip: true, shade: .55, glow: .4 }),
-    text(x, height / 2 + size * .36, words, size, { fill: C.powder, 'font-weight': 600, ...NOKERN }),
-    arrow(x + w + 14, height / 2 - 7, 14),
-  ].join(''), { label: words, gap: 8 }) };
-}
-
-const outputs = { 'dist/profile.svg': desktop(), 'dist/profile-mobile.svg': mobile() };
-const cards = [];
-const addCard = (name, make, href) => {
-  const desktopCard = make(false), mobileCard = make(true);
-  outputs['dist/open-source/' + name + '.svg'] = desktopCard.svg;
-  outputs['dist/open-source/' + name + '-mobile.svg'] = mobileCard.svg;
-  cards.push({ name, alt: desktopCard.alt, href });
-};
-addCard('header', mobileFlag => ossHeader(mobileFlag));
-pullRequests.forEach((pr, i) => addCard(pr.slug, mobileFlag => prCard(pr, i, mobileFlag), pr.url));
-addCard('browse-all', mobileFlag => ossFooter(mobileFlag), mergedSearchUrl);
-
+rmSync(join(root, 'dist/open-source'), { recursive: true, force: true });
+rmSync(join(root, 'dist/panel'), { recursive: true, force: true });
 const version = createHash('sha256').update(Object.values(outputs).join('\n')).digest('hex').slice(0, 12);
-const picture = (name, alt, width = '100%') => '<picture>\n'
-  + '  <source media="(max-width: 680px)" srcset="./dist/' + name + '-mobile.svg?v=' + version + '">\n'
-  + '  <img src="./dist/' + name + '.svg?v=' + version + '" alt="' + escape(alt) + '" width="' + width + '">\n</picture>';
-const cardMarkup = cards.map(card => {
-  const image = picture('open-source/' + card.name, card.alt);
-  return card.href ? '<a href="' + escape(card.href) + '">\n' + image + '\n</a>' : image;
-}).join('\n');
+const picture = (s, alt) => {
+  const file = (s.daily ? 'dist/' : 'dist/panel/') + s.name;
+  return '<picture><source media="(max-width: 680px)" srcset="./' + file + '-mobile.svg?v=' + version + '"><img src="./' + file
+    + '.svg?v=' + version + '" alt="' + escape(alt) + '" width="' + s.w + '" align="top"></picture>';
+};
+// No whitespace between images and no blank lines inside the block: the slices must touch.
+const panelHtml = platforms[0].slices.map(s => {
+  const image = picture(s, s.label);
+  return s.href ? '<a href="' + escape(s.href) + '">' + image + '</a>' : image;
+}).join('');
 const readme = [
   '<!-- Generated by scripts/build.mjs. Edit profile.config.json or the renderer. -->',
-  '<div align="center">', '',
-  picture('profile', title + '. ' + description), '',
-  '<p align="center"><a href="' + escape(config.contact.email) + '"><strong>Let’s talk</strong></a>'
-    + '&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' + escape(config.contact.linkedin) + '">LinkedIn</a>'
-    + '&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' + escape(config.contact.website) + '">' + escape(config.company) + '</a></p>', '',
-  cardMarkup, '',
+  '<div align="center">',
+  panelHtml,
   '</div>', '',
   '<details>',
   '<summary>Profile in plain text</summary>', '',
@@ -399,9 +444,10 @@ const readme = [
   bio, '',
   '**A focused toolkit:** ' + config.tools.map(t => t.name).join(' · ') + '.', '',
   '**Selected open-source contributions:**', '',
-  ...config.openSource.map(e => '- [' + e.name + '](https://github.com/' + e.repository + ') — ' + e.summary + ' '
-    + e.prs.map(n => '[#' + n + '](https://github.com/' + e.repository + '/pull/' + n + ')').join(', ')),
+  ...projects.map(p => '- [' + p.name + '](https://github.com/' + p.repository + ') — ' + p.summary + ' '
+    + p.prs.map(pr => '[#' + pr.number + '](' + pr.url + ')').join(', ')),
   '',
+  '**Contact:** [Let’s talk](' + config.contact.email + ') · [LinkedIn](' + config.contact.linkedin + ') · [' + config.company + '](' + config.contact.website + ')', '',
   '**GitHub activity:** ' + count + ' contributions from ' + activity.range.from + ' through ' + activity.range.to + '.<br>',
   'Last successful refresh: ' + updated + '. Activity refreshes daily.<br>',
   '[View activity on GitHub](https://github.com/' + config.login + '?tab=overview)', '',
@@ -417,4 +463,4 @@ for (const [relative, content] of Object.entries(outputs)) {
   writeFileSync(temporary, content);
   renameSync(temporary, output);
 }
-console.log('Built profile artwork from ' + activity.updatedAt + ' (' + Object.keys(outputs).length + ' files).');
+console.log('Built profile panel from ' + activity.updatedAt + ' (' + Object.keys(outputs).length + ' files).');

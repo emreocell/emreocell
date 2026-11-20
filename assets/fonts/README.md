@@ -24,3 +24,5 @@ pyftsubset /tmp/profile-manrope-400-800.ttf --unicodes='U+0020-007E,U+00A0,U+00A
 ## Text metrics
 
 `manrope-metrics.json` holds per-character advance widths (in em) at weights 500, 600 and 650, generated from this font with `scripts/tools/font-metrics.py`. The offline build uses it to wrap text and place the company wordmark; text that is measured this way is drawn with `font-kerning:none` so the numbers match.
+
+`manrope-panel.woff2` is a smaller derivative (printable ASCII, middle dot, em dash and curly apostrophes; weights 500-650 only) made with `scripts/tools/font-subset.py`. The many small profile slices embed it to keep the total payload low; it carries the same OFL license.
