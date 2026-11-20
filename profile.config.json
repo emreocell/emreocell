@@ -21,14 +21,14 @@
     { "slug": "rust", "name": "Rust" }
   ],
   "openSource": [
-    {"repository":"stablyai/orca","name":"Orca","logo":"orca","summary":"Model-catalog cache stability and WSL watcher diagnostics.","prs":[44637,44762]},
-    {"repository":"The-PR-Agent/pr-agent","name":"PR-Agent","logo":"pr-agent","summary":"Safer webhook automation and privacy-aware OpenAI logging.","prs":[5022,5023]},
-    {"repository":"awslabs/mcp","name":"AWS MCP Servers","logo":"aws","summary":"Cleanup of LibreOffice process trees on timeouts and cancellation.","prs":[5123]},
-    {"repository":"repowise-dev/repowise","name":"RepoWise","logo":"repowise","summary":"Hyperfine JSON benchmark support in evidence workflows.","prs":[5887]},
-    {"repository":"TabularisDB/tabularis","name":"Tabularis","logo":"tabularis","summary":"Clearer plugin sidebar: the deprecated built-in driver is marked.","prs":[1602]},
-    {"repository":"ministackorg/ministack","name":"Ministack","logo":"ministack","summary":"Cognito identity-provider validation to prevent invalid states.","prs":[2745,2746]},
-    {"repository":"HarnessRouter/harnessrouter","name":"HarnessRouter","logo":"harnessrouter","summary":"Reliable self-hosted sign-in: usernames are trimmed.","prs":[718]},
-    {"repository":"n8n-io/nod","name":"n8n Nod","logo":"n8n","summary":"Welcome setup submits once when the engine restarts.","prs":[1223]}
+    {"repository":"stablyai/orca","name":"Orca","logo":"orca","prs":[44637,44762]},
+    {"repository":"The-PR-Agent/pr-agent","name":"PR-Agent","logo":"pr-agent","prs":[5022,5023]},
+    {"repository":"awslabs/mcp","name":"AWS MCP Servers","logo":"aws","prs":[5123]},
+    {"repository":"repowise-dev/repowise","name":"RepoWise","logo":"repowise","prs":[5887]},
+    {"repository":"TabularisDB/tabularis","name":"Tabularis","logo":"tabularis","prs":[1602]},
+    {"repository":"ministackorg/ministack","name":"Ministack","logo":"ministack","prs":[2745,2746]},
+    {"repository":"HarnessRouter/harnessrouter","name":"HarnessRouter","logo":"harnessrouter","prs":[718]},
+    {"repository":"n8n-io/nod","name":"n8n Nod","logo":"n8n","prs":[1223,1227,1228,1232,1233]}
   ],
   "contact": {
     "email": "mailto:emreocell1219@gmail.com",
