@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "login": "emreocell",
+  "updatedAt": "2026-11-20T16:24:43.884Z",
+  "repositories": {
+    "n8n-io/nod": [
+      1223,
+      1227,
+      1228,
+      1232,
+      1233,
+      1234
+    ]
+  }
+}

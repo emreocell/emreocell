@@ -35,18 +35,24 @@ jobs:
         with:
           node-version: 22
       - name: Check activity validation
-        run: node --test scripts/activity.test.mjs
+        run: node --test scripts/activity.test.mjs scripts/contributions.test.mjs
       - name: Fetch verified activity snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/activity.mjs
+      - name: Fetch merged pull requests of the dynamic projects
+        # Not fatal: the build falls back to the last committed data/contributions.json.
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/contributions.mjs
       - name: Render profile artwork
         run: node scripts/build.mjs
       - name: Publish refreshed artwork
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/activity.json dist README.md
+          git add data dist README.md
           if ! git diff --cached --quiet; then
             git commit -m "chore: refresh profile activity [skip ci]"
             git push origin HEAD:main

@@ -7,10 +7,10 @@ slices. Most of it is one image (the top block with name, toolkit, activity and 
 header, `dist/profile.svg`); it is cut only where something has to be clickable:
 
 - each project is one row: its logo, name and repository on the left, and one pill button per
-  merged pull request (git-merge icon and number) right-aligned in up to five equal cells
-  (`dist/panel/*-prN.*.svg`). The cells are percentages of the width (12% each plus a 5.6% edge), so
-  desktop and mobile cut them identically. More than four PRs wrap to further rows, split evenly
-  (six become 3 + 3). Descriptions are intentionally absent: with several PRs per project there is
+  merged pull request (git-merge icon and number) right-aligned in up to six equal cells
+  (`dist/panel/*-prN.*.svg`). The cells are percentages of the width (11.2% each plus a 5.6% edge), so
+  desktop and mobile cut them identically; PRs beyond the cells are summarised by a `+N` pill (see
+  below). Descriptions are intentionally absent: with several PRs per project there is
   no room for them, and the repository name carries the context;
 - the "Browse all merged PRs" strip and the three contact buttons (Let's talk, LinkedIn, the
   company wordmark) at the bottom.
@@ -62,6 +62,24 @@ File names carry a hash of their content and the build deletes files that are no
 referenced. This matters: GitHub's image proxy caches by URL but fetches from `raw` by path, and
 `raw` serves a changed file under an unchanged name stale for several minutes, which would mix old
 and new slices. A new name per content makes that impossible.
+
+## Projects with many merged PRs
+
+A project row has six cells. With up to five merged PRs every PR gets its own pill; with more,
+the first five are shown and a `+N` pill (half as wide as a PR pill; N = total PRs minus five, so six
+PRs show `+1`) that opens the GitHub search `is:pr author:<login> is:merged -user:<login> sort:updated-desc repo:<repository>`.
+
+For a project with so many merges that editing the config after each one would be tedious, set
+`"dynamic": true` on its `openSource` entry. `scripts/contributions.mjs` then lists its merged PR
+numbers with the workflow's `GITHUB_TOKEN` into `data/contributions.json` (numbers only), and the
+build uses them, so a new merge only changes the count. The numbers left in the config are the
+fallback when the snapshot is missing. Other projects keep their hand-written `prs` list.
+
+```sh
+node --test scripts/contributions.test.mjs
+GITHUB_TOKEN=... node scripts/contributions.mjs
+node scripts/build.mjs
+```
 
 ## Activity
 
