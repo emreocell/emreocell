@@ -107,7 +107,8 @@ try {
   contributions = validateContributions(JSON.parse(read('data/contributions.json')));
   if (contributions.login !== config.login) contributions = null;
 } catch { contributions = null; }
-const SLOTS = 6; // cells per open-source row (PR pills, or the last one as "+N")
+const PILLS = 5; // PR pills shown per project; more than that and the sixth cell shows "+N" (N = total - 5)
+const SLOTS = PILLS + 1; // cells per open-source row
 const searchUrl = repository => 'https://github.com/search?q='
   + encodeURIComponent('is:pr author:' + config.login + ' is:merged -user:' + config.login + ' sort:updated-desc repo:' + repository)
   + '&type=pullrequests';
@@ -121,8 +122,7 @@ const projects = config.openSource.map(entry => {
   if (!/^[a-z0-9-]+$/.test(entry.logo || '')) throw new Error('Missing or invalid logo for ' + entry.name + ' in profile.config.json.');
   const live = entry.dynamic ? contributions?.repositories?.[entry.repository] : null;
   const prs = (live?.length ? live : entry.prs).map(number => ({ number, url: 'https://github.com/' + entry.repository + '/pull/' + number }));
-  // Cells are limited: beyond that, keep all but one cell of PRs and use the last one for "+N".
-  const shown = prs.length > SLOTS ? prs.slice(0, SLOTS - 1) : prs;
+  const shown = prs.length > PILLS ? prs.slice(0, PILLS) : prs;
   return {
     ...entry, logoData: readFileSync(join(root, 'assets/logos/' + entry.logo + '.webp')).toString('base64'),
     slug: entry.repository.replace('/', '-').toLowerCase(), prs, shown, extra: prs.length - shown.length,
@@ -443,7 +443,7 @@ function plan(mobile) {
         items: rule + (cell.pr ? prPill(...at, cell.pr.number, mobile) : morePill(...at, cell.more, mobile)),
         href: cell.pr ? cell.pr.url : p.searchUrl,
         label: cell.pr ? p.name + ' merged pull request #' + cell.pr.number
-          : p.name + ': ' + cell.more + ' more merged pull requests' });
+          : p.name + ': ' + cell.more + ' more merged pull request' + (cell.more === 1 ? '' : 's') });
     });
     y += rowH;
     first = false;
