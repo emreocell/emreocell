@@ -1,10 +1,26 @@
 # Profile artwork
 
-The profile is one continuous SVG composition with a separate mobile layout.
-GitHub selects the mobile SVG below a 680px viewport through the README's
-`picture` element. Contact links are native README anchors, so they remain
-clickable and keyboard accessible. A collapsed text version preserves the
-profile information for readers who cannot use the artwork.
+The profile is one painted panel: a single virtual canvas with one grainy mesh gradient, a
+desktop layout (1200 px wide) and a separate mobile layout (640 px wide, selected below a 680px
+viewport through the README's `picture` elements). It is delivered as a stack of seamless SVG
+slices. Most of it is one image (the top block with name, toolkit, activity and the open-source
+header, `dist/profile.svg`); it is cut only where something has to be clickable:
+
+- every project row starts with its logo (`assets/logos/`, referenced by `logo` in the config);
+- each merged pull request is a pill button on the right of its project row (`dist/panel/*-pr0.svg`,
+  `*-pr1.svg`), so a project with two merged PRs shows two buttons side by side. The pill cells are
+  percentages of the width (20.6% and 17%), so the buttons line up on desktop and mobile;
+- the "Browse all merged PRs" strip and the three contact buttons (Let's talk, LinkedIn, the
+  company wordmark) at the bottom.
+
+Every slice paints the same canvas (same mesh, same grain noise in the same coordinates), so the
+cuts are invisible. In the README the slices are inline images with `align="top"` and no
+whitespace or blank lines between them, so they touch exactly. A collapsed text version preserves
+all information, including every link, as copyable text.
+
+GitHub shows SVGs through `<img>`: text inside them cannot be selected, nothing can be layered on
+top of them and links inside an SVG are inert. That is why the buttons are separate images wrapped
+in native links, and why the plain-text section exists.
 
 ## Edit and build
 
@@ -15,23 +31,33 @@ required for a normal build.
 node scripts/build.mjs
 ```
 
-Edit `profile.config.json` for identity, copy, palette, links and the five core
-tools. The two biography lines are joined on desktop and arranged separately
-on mobile. Keep copy concise and inspect both layouts after changing it.
-`opticalScale` balances wide logo shapes without altering their geometry.
-Layout and mesh drawing live in `scripts/build.mjs`.
+Edit `profile.config.json` for identity, copy, palette, links, the five core tools and the
+open-source list (`openSource`: repository, display name, one-line summary and one or two merged
+PR numbers). The two biography lines are joined on desktop and arranged separately on mobile. Keep
+copy concise and inspect both layouts after changing it. `opticalScale` balances wide logo shapes
+without altering their geometry. `companyLogo` names the wordmark in `assets/brand/` that
+replaces the company name in the role line and appears on the contact button. Layout and mesh
+drawing live in `scripts/build.mjs`.
+
+Text is measured offline with real Manrope advances from `assets/fonts/manrope-metrics.json`
+(for wrapping and for placing the wordmark right after "Full Stack Developer at"). The small
+slices embed `assets/fonts/manrope-panel.woff2` (ASCII, weights 500-650) and only the top block
+embeds the full font. To regenerate the metrics, the panel font, or to re-trace a logo from a
+transparent PNG, see `scripts/tools/` (Python with `fonttools` and `brotli`, plus `opencv-python`
+for the trace); none of it runs in CI.
 
 Generated files:
 
-- `dist/profile.svg` — 1200 × 1440 desktop composition.
-- `dist/profile-mobile.svg` — 640 × 1600 mobile composition.
-- `README.md` — responsive images, real contact links and an accessible text
-  equivalent, all generated from the same configuration and activity snapshot.
+- `dist/profile.svg`, `dist/profile-mobile.svg` — the top block (the only slice that changes with
+  the daily refresh).
+- `dist/panel/*.svg` — every other slice, desktop and `-mobile`.
+- `README.md` — the slices in order, the links around the buttons and the text equivalent, all
+  generated from the same configuration and activity snapshot.
 
-The SVGs embed their font and logo paths. They need no JavaScript, external font
-request, statistics widget, animation or third-party image host. Both have a
-title and description. Artwork hashes in the README image URLs change whenever
-either composition changes, reducing stale image caching.
+The SVGs embed their font, logo paths and wordmark. They need no JavaScript, external font
+request, statistics widget, animation or third-party image host. Each has an accessible label.
+Artwork hashes in the README image URLs change whenever any image changes, reducing stale image
+caching.
 
 ## Activity
 
