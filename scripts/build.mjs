@@ -14,6 +14,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { validateActivity } from './activity.mjs';
+import { validateContributions } from './contributions.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const read = path => readFileSync(join(root, path), 'utf8');
@@ -99,6 +100,18 @@ const wordmarkWidth = height => height * brand.box[0] / brand.box[1];
 
 // ---- Projects -------------------------------------------------------------------------------
 
+// Projects flagged "dynamic" take their merged PR numbers from the daily snapshot (so a new merge
+// only changes the +N count); without a usable snapshot the numbers in the config are used.
+let contributions = null;
+try {
+  contributions = validateContributions(JSON.parse(read('data/contributions.json')));
+  if (contributions.login !== config.login) contributions = null;
+} catch { contributions = null; }
+const SLOTS = 6; // cells per open-source row (PR pills, or the last one as "+N")
+const searchUrl = repository => 'https://github.com/search?q='
+  + encodeURIComponent('is:pr author:' + config.login + ' is:merged -user:' + config.login + ' sort:updated-desc repo:' + repository)
+  + '&type=pullrequests';
+
 const projects = config.openSource.map(entry => {
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(entry.repository)
     || !entry.name || !Array.isArray(entry.prs) || entry.prs.length < 1
@@ -106,10 +119,14 @@ const projects = config.openSource.map(entry => {
     throw new Error('Invalid open-source contribution in profile.config.json (at least one merged PR per project).');
   }
   if (!/^[a-z0-9-]+$/.test(entry.logo || '')) throw new Error('Missing or invalid logo for ' + entry.name + ' in profile.config.json.');
+  const live = entry.dynamic ? contributions?.repositories?.[entry.repository] : null;
+  const prs = (live?.length ? live : entry.prs).map(number => ({ number, url: 'https://github.com/' + entry.repository + '/pull/' + number }));
+  // Cells are limited: beyond that, keep all but one cell of PRs and use the last one for "+N".
+  const shown = prs.length > SLOTS ? prs.slice(0, SLOTS - 1) : prs;
   return {
     ...entry, logoData: readFileSync(join(root, 'assets/logos/' + entry.logo + '.webp')).toString('base64'),
-    slug: entry.repository.replace('/', '-').toLowerCase(),
-    prs: entry.prs.map(number => ({ number, url: 'https://github.com/' + entry.repository + '/pull/' + number })),
+    slug: entry.repository.replace('/', '-').toLowerCase(), prs, shown, extra: prs.length - shown.length,
+    searchUrl: searchUrl(entry.repository),
   };
 });
 const prTotal = projects.reduce((sum, p) => sum + p.prs.length, 0);
@@ -344,10 +361,10 @@ function topBlock(P) {
 
 // Merged-PR pill: a git-merge icon and the PR number. Its width comes from the grid cell it is
 // cut from, so it is identical on desktop and mobile (the cells are percentages of the width).
-// Open-source rows: the name cell on the left, then SLOTS equal pill cells, then a right edge, all
-// percentages of the width so desktop and mobile cut the same cells. More PRs than slots wrap to
-// further rows, split evenly (6 PRs become 3 + 3).
-const SLOTS = 5, CELL = 12, EDGE = 5.6;
+// Open-source rows: the name cell on the left, then SLOTS equal cells (PR pills, or a "+N" pill that
+// opens the GitHub search for the rest), then a right edge, all percentages of the width so desktop
+// and mobile cut the same cells.
+const CELL = 11.2, EDGE = 5.6;
 const mergeIcon = (x, y, size, color = C.powder) => group({ transform: 'translate(' + x + ' ' + y + ') scale(' + size / 16 + ')',
   fill: 'none', stroke: color, 'stroke-width': 1.7, 'stroke-linecap': 'round' }, [
   tag('circle', { cx: 4, cy: 3, r: 2 }), tag('circle', { cx: 4, cy: 13, r: 2 }), tag('circle', { cx: 12, cy: 8, r: 2 }),
@@ -361,6 +378,15 @@ function prPill(x, y, w, h, number, m) {
   return rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .2 })
     + (icon ? mergeIcon(left, middle - icon / 2, icon) : '')
     + text(left + (icon ? icon + gap : 0), middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
+    + (arrowSize ? arrow(left + content - arrowSize, middle - arrowSize / 2, arrowSize) : '');
+}
+/** "+N": the pill that opens the GitHub search for the pull requests that did not fit. */
+function morePill(x, y, w, h, extra, m) {
+  const size = m ? 15 : 20, arrowSize = m ? 0 : 11, gap = 8, label = '+' + extra;
+  const content = measure(label, size, 650) + (arrowSize ? gap + arrowSize : 0);
+  const left = x + (w - content) / 2, middle = y + h / 2;
+  return rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.powder, 'stroke-opacity': .45 })
+    + text(left, middle + size * .34, label, size, { fill: C.powder, 'font-weight': 650, ...NOKERN })
     + (arrowSize ? arrow(left + content - arrowSize, middle - arrowSize / 2, arrowSize) : '');
 }
 function contactButton(x, y, w, h, contact, m) {
@@ -401,24 +427,25 @@ function plan(mobile) {
   const pct = w => (100 * w / W).toFixed(4) + '%';
   let first = true;
   for (const p of projects) {
-    const rowCount = Math.ceil(p.prs.length / SLOTS), per = Math.ceil(p.prs.length / rowCount);
-    for (let r = 0; r < rowCount; r++) {
-      const chunk = p.prs.slice(r * per, (r + 1) * per), blank = SLOTS - chunk.length, infoW = nameW + blank * cellW;
-      const nameLines = mobile ? wrap(p.name, nameSize, 600, infoW - textX - 8) : [p.name]; // as wide as this row's free cells allow
-      const rule = r === 0 && !first ? line(y, W, inset) : ''; // no rule under the header: the panel flows straight in
-      const head = r === 0 ? logoTile(p, inset, y + (rowH - tile) / 2, tile)
-        + nameLines.map((value, n) => text(textX, y + (nameLines.length > 1 ? 32 : (mobile ? 44 : 38)) + n * 22, value, nameSize, { 'font-weight': 600 })).join('')
-        + (mobile ? '' : text(textX, y + 60, p.repository, 14.5, { fill: C.muted, 'font-weight': 500 })) : '';
-      slices.push({ name: p.slug + '-r' + r, win: { x0: 0, y0: y, w: infoW, h: rowH }, w: pct(infoW),
-        items: rule + head, label: r === 0 ? p.name + ' (' + p.repository + ')' : '' });
-      chunk.forEach((pr, k) => {
-        const x0 = infoW + k * cellW, w = k === chunk.length - 1 ? cellW + edgeW : cellW;
-        slices.push({ name: p.slug + '-r' + r + '-pr' + k, win: { x0, y0: y, w, h: rowH }, w: pct(w),
-          items: rule + prPill(x0 + pillGap / 2, y + (rowH - pillH) / 2, pillW, pillH, pr.number, mobile),
-          href: pr.url, label: p.name + ' merged pull request #' + pr.number });
-      });
-      y += rowH;
-    }
+    const cells = p.shown.map(pr => ({ pr })).concat(p.extra ? [{ more: p.extra }] : []);
+    const infoW = nameW + (SLOTS - cells.length) * cellW;
+    const nameLines = mobile ? wrap(p.name, nameSize, 600, infoW - textX - 8) : [p.name]; // as wide as this row's free cells allow
+    const rule = first ? '' : line(y, W, inset); // no rule under the header: the panel flows straight in
+    const head = logoTile(p, inset, y + (rowH - tile) / 2, tile)
+      + nameLines.map((value, n) => text(textX, y + (nameLines.length > 1 ? 32 : (mobile ? 44 : 38)) + n * 22, value, nameSize, { 'font-weight': 600 })).join('')
+      + (mobile ? '' : text(textX, y + 60, p.repository, 14.5, { fill: C.muted, 'font-weight': 500 }));
+    slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: infoW, h: rowH }, w: pct(infoW),
+      items: rule + head, label: p.name + ' (' + p.repository + ')' });
+    cells.forEach((cell, k) => {
+      const x0 = infoW + k * cellW, w = k === cells.length - 1 ? cellW + edgeW : cellW;
+      const at = [x0 + pillGap / 2, y + (rowH - pillH) / 2, pillW, pillH];
+      slices.push({ name: p.slug + (cell.pr ? '-pr' + k : '-more'), win: { x0, y0: y, w, h: rowH }, w: pct(w),
+        items: rule + (cell.pr ? prPill(...at, cell.pr.number, mobile) : morePill(...at, cell.more, mobile)),
+        href: cell.pr ? cell.pr.url : p.searchUrl,
+        label: cell.pr ? p.name + ' merged pull request #' + cell.pr.number
+          : p.name + ': ' + cell.more + ' more merged pull requests' });
+    });
+    y += rowH;
     first = false;
   }
   const browseH = mobile ? 68 : 76, browse = 'Browse all merged PRs on GitHub', bs = mobile ? 18 : 20;
