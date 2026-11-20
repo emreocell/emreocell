@@ -66,7 +66,7 @@ and new slices. A new name per content makes that impossible.
 ## Projects with many merged PRs
 
 A project row has six cells. With up to five merged PRs every PR gets its own pill; with more,
-the first five are shown and the sixth cell becomes a `+N` pill (N = total PRs minus five, so six
+the first five are shown and a `+N` pill (half as wide as a PR pill; N = total PRs minus five, so six
 PRs show `+1`) that opens the GitHub search `is:pr author:<login> is:merged -user:<login> sort:updated-desc repo:<repository>`.
 
 For a project with so many merges that editing the config after each one would be tedious, set

@@ -380,9 +380,13 @@ function prPill(x, y, w, h, number, m) {
     + text(left + (icon ? icon + gap : 0), middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
     + (arrowSize ? arrow(left + content - arrowSize, middle - arrowSize / 2, arrowSize) : '');
 }
-/** "+N": the pill that opens the GitHub search for the pull requests that did not fit. */
+/** "+N": the pill that opens the GitHub search for the pull requests that did not fit. It is half as wide as a PR pill. */
 function morePill(x, y, w, h, extra, m) {
-  const size = m ? 15 : 20, arrowSize = m ? 0 : 11, gap = 8, label = '+' + extra;
+  const label = '+' + extra, gap = 6;
+  let size = m ? 15 : 20, arrowSize = m ? 0 : 11;
+  // Make the text (and the arrow, if it fits) fit the narrow pill, whatever N is.
+  if (arrowSize && measure(label, size, 650) + gap + arrowSize > w - 14) arrowSize = 0;
+  while (size > 9 && measure(label, size, 650) + (arrowSize ? gap + arrowSize : 0) > w - 8) size -= .5;
   const content = measure(label, size, 650) + (arrowSize ? gap + arrowSize : 0);
   const left = x + (w - content) / 2, middle = y + h / 2;
   return rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.powder, 'stroke-opacity': .45 })
@@ -427,8 +431,8 @@ function plan(mobile) {
   const pct = w => (100 * w / W).toFixed(4) + '%';
   let first = true;
   for (const p of projects) {
-    const cells = p.shown.map(pr => ({ pr })).concat(p.extra ? [{ more: p.extra }] : []);
-    const infoW = nameW + (SLOTS - cells.length) * cellW;
+    const chipW = p.extra ? cellW / 2 : 0; // the "+N" cell is half as wide as a PR cell
+    const infoW = W - edgeW - chipW - p.shown.length * cellW;
     const nameLines = mobile ? wrap(p.name, nameSize, 600, infoW - textX - 8) : [p.name]; // as wide as this row's free cells allow
     const rule = first ? '' : line(y, W, inset); // no rule under the header: the panel flows straight in
     const head = logoTile(p, inset, y + (rowH - tile) / 2, tile)
@@ -436,15 +440,20 @@ function plan(mobile) {
       + (mobile ? '' : text(textX, y + 60, p.repository, 14.5, { fill: C.muted, 'font-weight': 500 }));
     slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: infoW, h: rowH }, w: pct(infoW),
       items: rule + head, label: p.name + ' (' + p.repository + ')' });
-    cells.forEach((cell, k) => {
-      const x0 = infoW + k * cellW, w = k === cells.length - 1 ? cellW + edgeW : cellW;
-      const at = [x0 + pillGap / 2, y + (rowH - pillH) / 2, pillW, pillH];
-      slices.push({ name: p.slug + (cell.pr ? '-pr' + k : '-more'), win: { x0, y0: y, w, h: rowH }, w: pct(w),
-        items: rule + (cell.pr ? prPill(...at, cell.pr.number, mobile) : morePill(...at, cell.more, mobile)),
-        href: cell.pr ? cell.pr.url : p.searchUrl,
-        label: cell.pr ? p.name + ' merged pull request #' + cell.pr.number
-          : p.name + ': ' + cell.more + ' more merged pull request' + (cell.more === 1 ? '' : 's') });
+    const top = y + (rowH - pillH) / 2;
+    p.shown.forEach((pr, k) => {
+      const x0 = infoW + k * cellW, w = k === p.shown.length - 1 && !p.extra ? cellW + edgeW : cellW;
+      slices.push({ name: p.slug + '-pr' + k, win: { x0, y0: y, w, h: rowH }, w: pct(w),
+        items: rule + prPill(x0 + pillGap / 2, top, pillW, pillH, pr.number, mobile),
+        href: pr.url, label: p.name + ' merged pull request #' + pr.number });
     });
+    if (p.extra) {
+      const x0 = infoW + p.shown.length * cellW, w = chipW + edgeW;
+      slices.push({ name: p.slug + '-more', win: { x0, y0: y, w, h: rowH }, w: pct(w),
+        items: rule + morePill(x0 + pillGap / 2, top, chipW - pillGap, pillH, p.extra, mobile),
+        href: p.searchUrl,
+        label: p.name + ': ' + p.extra + ' more merged pull request' + (p.extra === 1 ? '' : 's') });
+    }
     y += rowH;
     first = false;
   }
