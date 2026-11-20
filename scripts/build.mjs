@@ -405,9 +405,10 @@ function plan(mobile) {
     y += rowH;
   }
   const browseH = mobile ? 68 : 76, browse = 'Browse all merged PRs on GitHub', bs = mobile ? 18 : 20;
+  const browseX = (W - (measure(browse, bs, 600) + 14 + 14)) / 2; // text + gap + arrow, centred
   slices.push({ name: 'browse-all', win: { x0: 0, y0: y, w: W, h: browseH }, w: '100%', href: mergedSearchUrl, label: browse,
-    items: line(y, W, inset) + text(inset, y + browseH / 2 + bs * .42, browse, bs, { fill: C.powder, 'font-weight': 600, ...NOKERN })
-      + arrow(inset + measure(browse, bs, 600) + 14, y + browseH / 2 - 7, 14) });
+    items: line(y, W, inset) + text(browseX, y + browseH / 2 + bs * .42, browse, bs, { fill: C.powder, 'font-weight': 600, ...NOKERN })
+      + arrow(browseX + measure(browse, bs, 600) + 14, y + browseH / 2 - 7, 14) });
   y += browseH;
   const ctaH = mobile ? 214 : 196;
   slices.push({ name: 'call-to-action', win: { x0: 0, y0: y, w: W, h: ctaH }, w: '100%', label: config.cta.eyebrow + ' ' + config.cta.title,
