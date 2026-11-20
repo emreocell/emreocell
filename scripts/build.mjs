@@ -9,7 +9,7 @@
 //
 // Text is measured with real Manrope advances (assets/fonts/manrope-metrics.json), so wrapping
 // and the company wordmark placement are exact without a browser.
-import { readFileSync, mkdirSync, writeFileSync, renameSync, rmSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync, renameSync, rmSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -148,6 +148,8 @@ function defs(w, h, corners, fontData) {
       stop('0%', C.ink, 0) + stop('56%', C.ink, 0) + stop('100%', C.ink)),
     tag('filter', { id: 'blur', x: '-30%', y: '-30%', width: '160%', height: '160%', 'color-interpolation-filters': 'sRGB' },
       tag('feGaussianBlur', { stdDeviation: 24 })),
+    tag('filter', { id: 'scrim', x: '-30%', y: '-120%', width: '160%', height: '340%', 'color-interpolation-filters': 'sRGB' },
+      tag('feGaussianBlur', { stdDeviation: 20 })),
     tag('filter', { id: 'grain', x: '0%', y: '0%', width: '100%', height: '100%' }, [
       tag('feTurbulence', { type: 'fractalNoise', baseFrequency: '.44', numOctaves: 2, stitchTiles: 'stitch', seed: 17 }),
       tag('feColorMatrix', { type: 'saturate', values: 0 }),
@@ -179,6 +181,7 @@ function painting(P, win) {
     mesh(m ? 'translate(-250 20) scale(.94)' : 'translate(40 -190)'),
     rect({ width: P.W, height: m ? 658 : 420, fill: 'url(#shade)', opacity: m ? .68 : .74 }),
     rect({ width: P.W, height: m ? 678 : 440, fill: 'url(#fade)' }),
+    ...(P.scrims || []).map(k => rect({ x: k.x, y: k.y, width: k.w, height: k.h, rx: k.h / 2, fill: C.ink, opacity: k.opacity, filter: 'url(#scrim)' })),
     // a second, calmer glow behind the open-source rows
     group({ opacity: .72 }, mesh('translate(' + (m ? -330 : 20) + ' ' + (P.rowsTop + (m ? 60 : 30)) + ') scale(' + (m ? .8 : 1) + ')')),
     rect({ x: 0, y: P.rowsTop - 40, width: P.W, height: P.H - P.rowsTop + 40, fill: 'url(#shade)', opacity: m ? .5 : .42 }),
@@ -371,6 +374,14 @@ function contactButton(x, y, w, h, contact, m) {
 function plan(mobile) {
   const W = mobile ? 640 : 1200, inset = mobile ? 40 : 64;
   const P = { W, mobile, inset, H: 0, rowsTop: 0 };
+  if (!mobile) {
+    const role = roleWidth(23, 21);
+    P.scrims = [
+      { x: W - inset - role - 56, y: 166, w: role + 112, h: 62, opacity: .8 },
+      { x: W - inset - 330, y: 268, w: 400, h: 78, opacity: .7 },
+      { x: W - inset - 220, y: 38, w: 290, h: 44, opacity: .55 },
+    ];
+  }
   const top = topBlock(P);
   P.rowsTop = top.height;
   const slices = [{ name: 'profile', win: { x0: 0, y0: 0, w: W, h: top.height }, items: top.items, w: '100%',
@@ -432,20 +443,21 @@ function plan(mobile) {
 
 const outputs = {};
 const platforms = [false, true].map(plan);
+// Content-hashed names: a file that changes gets a new URL, so GitHub's image caches (which
+// ignore ?query strings) can never serve a stale slice next to fresh ones.
+const hashed = {};
 for (const { P, slices } of platforms) {
+  hashed[P.mobile ? 'mobile' : 'desktop'] = {};
   for (const s of slices) {
-    const file = s.daily ? 'dist/' + s.name : 'dist/panel/' + s.name;
-    outputs[file + (P.mobile ? '-mobile' : '') + '.svg'] = slice(P, s.win, s.items, { label: s.label, desc: s.desc, fullFont: !!s.daily });
+    const svg = slice(P, s.win, s.items, { label: s.label, desc: s.desc, fullFont: !!s.daily });
+    const file = (s.daily ? 'dist/' : 'dist/panel/') + s.name + (P.mobile ? '-mobile' : '') + '.'
+      + createHash('sha256').update(svg).digest('hex').slice(0, 10) + '.svg';
+    outputs[file] = svg;
+    hashed[P.mobile ? 'mobile' : 'desktop'][s.name] = file;
   }
 }
-rmSync(join(root, 'dist/open-source'), { recursive: true, force: true });
-rmSync(join(root, 'dist/panel'), { recursive: true, force: true });
-const version = createHash('sha256').update(Object.values(outputs).join('\n')).digest('hex').slice(0, 12);
-const picture = (s, alt) => {
-  const file = (s.daily ? 'dist/' : 'dist/panel/') + s.name;
-  return '<picture><source media="(max-width: 680px)" srcset="./' + file + '-mobile.svg?v=' + version + '"><img src="./' + file
-    + '.svg?v=' + version + '" alt="' + escape(alt) + '" width="' + s.w + '" align="top"></picture>';
-};
+const picture = (s, alt) => '<picture><source media="(max-width: 680px)" srcset="./' + hashed.mobile[s.name]
+  + '"><img src="./' + hashed.desktop[s.name] + '" alt="' + escape(alt) + '" width="' + s.w + '" align="top"></picture>';
 // No whitespace between images and no blank lines inside the block: the slices must touch.
 const panelHtml = platforms[0].slices.map(s => {
   const image = picture(s, s.label);
@@ -473,7 +485,8 @@ const readme = [
   '</details>', '',
 ].join('\n');
 
-// Prepare every output before touching a previous good render.
+// Prepare every output before touching a previous good render, then drop files that are no longer
+// referenced (old hashes, removed projects).
 outputs['README.md'] = readme;
 for (const [relative, content] of Object.entries(outputs)) {
   const output = join(root, relative);
@@ -482,4 +495,7 @@ for (const [relative, content] of Object.entries(outputs)) {
   writeFileSync(temporary, content);
   renameSync(temporary, output);
 }
+const walk = dir => readdirSync(join(root, dir), { withFileTypes: true }).flatMap(entry =>
+  entry.isDirectory() ? walk(dir + '/' + entry.name) : [dir + '/' + entry.name]);
+for (const file of walk('dist')) if (!(file in outputs)) rmSync(join(root, file));
 console.log('Built profile panel from ' + activity.updatedAt + ' (' + Object.keys(outputs).length + ' files).');
