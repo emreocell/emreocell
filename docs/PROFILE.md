@@ -6,10 +6,12 @@ viewport through the README's `picture` elements). It is delivered as a stack of
 slices. Most of it is one image (the top block with name, toolkit, activity and the open-source
 header, `dist/profile.svg`); it is cut only where something has to be clickable:
 
-- every project row starts with its logo (`assets/logos/`, referenced by `logo` in the config);
-- each merged pull request is a pill button on the right of its project row (`dist/panel/*-pr0.svg`,
-  `*-pr1.svg`), so a project with two merged PRs shows two buttons side by side. The pill cells are
-  percentages of the width (20.6% and 17%), so the buttons line up on desktop and mobile;
+- each project is one row: its logo, name and repository on the left, and one pill button per
+  merged pull request (git-merge icon and number) right-aligned in up to five equal cells
+  (`dist/panel/*-prN.*.svg`). The cells are percentages of the width (12% each plus a 5.6% edge), so
+  desktop and mobile cut them identically. More than four PRs wrap to further rows, split evenly
+  (six become 3 + 3). Descriptions are intentionally absent: with several PRs per project there is
+  no room for them, and the repository name carries the context;
 - the "Browse all merged PRs" strip and the three contact buttons (Let's talk, LinkedIn, the
   company wordmark) at the bottom.
 
@@ -32,12 +34,12 @@ node scripts/build.mjs
 ```
 
 Edit `profile.config.json` for identity, copy, palette, links, the five core tools and the
-open-source list (`openSource`: repository, display name, one-line summary and one or two merged
-PR numbers). The two biography lines are joined on desktop and arranged separately on mobile. Keep
-copy concise and inspect both layouts after changing it. `opticalScale` balances wide logo shapes
-without altering their geometry. `companyLogo` names the wordmark in `assets/brand/` that
-replaces the company name in the role line and appears on the contact button. Layout and mesh
-drawing live in `scripts/build.mjs`.
+open-source list (`openSource`: repository, display name, `logo` file in `assets/logos/` and the
+list of merged PR numbers; add a number when another PR is merged). The two biography lines are
+joined on desktop and arranged separately on mobile. Keep copy concise and inspect both layouts
+after changing it. `opticalScale` balances wide logo shapes without altering their geometry.
+`companyLogo` names the wordmark in `assets/brand/` that replaces the company name in the role line
+and appears on the contact button. Layout and mesh drawing live in `scripts/build.mjs`.
 
 Text is measured offline with real Manrope advances from `assets/fonts/manrope-metrics.json`
 (for wrapping and for placing the wordmark right after "Full Stack Developer at"). The small

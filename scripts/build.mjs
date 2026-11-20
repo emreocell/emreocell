@@ -101,9 +101,9 @@ const wordmarkWidth = height => height * brand.box[0] / brand.box[1];
 
 const projects = config.openSource.map(entry => {
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(entry.repository)
-    || !entry.name || !entry.summary || !Array.isArray(entry.prs) || entry.prs.length < 1 || entry.prs.length > 2
+    || !entry.name || !Array.isArray(entry.prs) || entry.prs.length < 1
     || !entry.prs.every(n => Number.isInteger(n) && n > 0)) {
-    throw new Error('Invalid open-source contribution in profile.config.json (1 or 2 PRs per project).');
+    throw new Error('Invalid open-source contribution in profile.config.json (at least one merged PR per project).');
   }
   if (!/^[a-z0-9-]+$/.test(entry.logo || '')) throw new Error('Missing or invalid logo for ' + entry.name + ' in profile.config.json.');
   return {
@@ -182,12 +182,16 @@ function painting(P, win) {
     rect({ width: P.W, height: m ? 658 : 420, fill: 'url(#shade)', opacity: m ? .68 : .74 }),
     rect({ width: P.W, height: m ? 678 : 440, fill: 'url(#fade)' }),
     ...(P.scrims || []).map(k => rect({ x: k.x, y: k.y, width: k.w, height: k.h, rx: k.h / 2, fill: C.ink, opacity: k.opacity, filter: 'url(#scrim)' })),
-    // a second, calmer glow behind the open-source rows
-    group({ opacity: .72 }, mesh('translate(' + (m ? -330 : 20) + ' ' + (P.rowsTop + (m ? 60 : 30)) + ') scale(' + (m ? .8 : 1) + ')')),
-    rect({ x: 0, y: P.rowsTop - 40, width: P.W, height: P.H - P.rowsTop + 40, fill: 'url(#shade)', opacity: m ? .5 : .42 }),
+    // a second, calmer glow behind the open-source rows, mirrored so its core sits mid-row where the
+    // name cell is a single image: the narrow pill slices (cut at fractional pixels) stay on a dark ground
+    group({ opacity: .46 }, mesh('translate(' + P.W + ' 0) scale(-1 1) translate(' + Math.round(P.W * (m ? .76 : .66) - 1105 * (m ? .8 : 1)) + ' ' + (P.rowsTop + (m ? 60 : 30)) + ') scale(' + (m ? .8 : 1) + ')')),
+    rect({ x: 0, y: P.rowsTop - 40, width: P.W, height: P.H - P.rowsTop + 40, fill: 'url(#shade)', opacity: m ? .3 : .22 }),
     tag('ellipse', { cx: P.W * .89, cy: P.H + 40, rx: P.W * .65, ry: 330, fill: 'url(#bottom)' }),
-    rect({ x: win.x0, y: win.y0, width: win.w, height: win.h, filter: 'url(#grain)', opacity: .52, style: 'mix-blend-mode:soft-light' }),
-    rect({ x: win.x0, y: win.y0, width: win.w, height: win.h, filter: 'url(#grain)', opacity: .07 }),
+    // The grain must be generated for the SAME rectangle in every slice (the noise is stitched to the
+    // size of its region); a per-slice rectangle gives each slice a different texture, which soft-light
+    // makes visible as rectangles on the bright glow.
+    rect({ x: 0, y: 0, width: P.W, height: P.H, filter: 'url(#grain)', opacity: .52, style: 'mix-blend-mode:soft-light' }),
+    rect({ x: 0, y: 0, width: P.W, height: P.H, filter: 'url(#grain)', opacity: .07 }),
   ].join('');
 }
 
@@ -340,19 +344,23 @@ function topBlock(P) {
 
 // Merged-PR pill: a git-merge icon and the PR number. Its width comes from the grid cell it is
 // cut from, so it is identical on desktop and mobile (the cells are percentages of the width).
-const PILL_B = 20.6, PILL_A = 17; // % of the width: the last cell, and the one before it
+// Open-source rows: the name cell on the left, then SLOTS equal pill cells, then a right edge, all
+// percentages of the width so desktop and mobile cut the same cells. More PRs than slots wrap to
+// further rows, split evenly (6 PRs become 3 + 3).
+const SLOTS = 5, CELL = 12, EDGE = 5.6;
 const mergeIcon = (x, y, size, color = C.powder) => group({ transform: 'translate(' + x + ' ' + y + ') scale(' + size / 16 + ')',
   fill: 'none', stroke: color, 'stroke-width': 1.7, 'stroke-linecap': 'round' }, [
   tag('circle', { cx: 4, cy: 3, r: 2 }), tag('circle', { cx: 4, cy: 13, r: 2 }), tag('circle', { cx: 12, cy: 8, r: 2 }),
   path({ d: 'M4 5V11M4 5C4 7.6 6.6 8 10 8' }),
 ].join(''));
 function prPill(x, y, w, h, number, m) {
-  const size = m ? 16 : 22, icon = m ? 12 : 16, gap = m ? 6 : 10, arrowSize = m ? 0 : 12;
-  const content = icon + gap + measure('#' + number, size, 650) + (arrowSize ? 10 + arrowSize : 0);
+  // Desktop: git-merge icon, number and arrow. Mobile cells are narrow, so only a larger number.
+  const size = m ? 16 : 20, icon = m ? 0 : 15, gap = 8, arrowSize = m ? 0 : 11;
+  const content = (icon ? icon + gap : 0) + measure('#' + number, size, 650) + (arrowSize ? gap + arrowSize : 0);
   const left = x + (w - content) / 2, middle = y + h / 2;
   return rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .2 })
-    + mergeIcon(left, middle - icon / 2, icon)
-    + text(left + icon + gap, middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
+    + (icon ? mergeIcon(left, middle - icon / 2, icon) : '')
+    + text(left + (icon ? icon + gap : 0), middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
     + (arrowSize ? arrow(left + content - arrowSize, middle - arrowSize / 2, arrowSize) : '');
 }
 function contactButton(x, y, w, h, contact, m) {
@@ -387,33 +395,31 @@ function plan(mobile) {
   const slices = [{ name: 'profile', win: { x0: 0, y0: 0, w: W, h: top.height }, items: top.items, w: '100%',
     label: title, desc: description, daily: true }];
   let y = top.height;
-  const nameSize = mobile ? 22 : 24, summarySize = mobile ? 17 : 18.5;
-  const tile = mobile ? 48 : 52, textX = inset + tile + (mobile ? 16 : 18);
-  const pillInset = mobile ? 32 : inset, pillGap = mobile ? 8 : 12, pillH = mobile ? 36 : 44;
-  const cellB = W * PILL_B / 100, cellA = W * PILL_A / 100;
-  const pw = cellB - pillInset, pillAx = W - cellB - pillGap - pw;
-  if (pillAx < W - cellB - cellA) throw new Error('Merged-PR pills do not fit their cells.');
+  const tile = mobile ? 36 : 52, textX = inset + tile + (mobile ? 12 : 18), nameSize = mobile ? 17 : 24;
+  const cellW = W * CELL / 100, edgeW = W * EDGE / 100, nameW = W - SLOTS * cellW - edgeW;
+  const pillGap = mobile ? 6 : 10, pillH = mobile ? 34 : 42, pillW = cellW - pillGap, rowH = mobile ? 76 : 80;
+  const pct = w => (100 * w / W).toFixed(4) + '%';
   let first = true;
   for (const p of projects) {
-    const two = p.prs.length === 2;
-    const textW = W - cellB - (two ? cellA : 0);
-    const lines = wrap(p.summary, summarySize, 500, textW - textX - 16);
-    const rowH = Math.round(72 + (lines.length - 1) * (mobile ? 24 : 25) + 22);
-    const rule = first ? '' : line(y, W, inset); // no rule under the header: the panel flows straight in
+    const rowCount = Math.ceil(p.prs.length / SLOTS), per = Math.ceil(p.prs.length / rowCount);
+    for (let r = 0; r < rowCount; r++) {
+      const chunk = p.prs.slice(r * per, (r + 1) * per), blank = SLOTS - chunk.length, infoW = nameW + blank * cellW;
+      const nameLines = mobile ? wrap(p.name, nameSize, 600, infoW - textX - 8) : [p.name]; // as wide as this row's free cells allow
+      const rule = r === 0 && !first ? line(y, W, inset) : ''; // no rule under the header: the panel flows straight in
+      const head = r === 0 ? logoTile(p, inset, y + (rowH - tile) / 2, tile)
+        + nameLines.map((value, n) => text(textX, y + (nameLines.length > 1 ? 32 : (mobile ? 44 : 38)) + n * 22, value, nameSize, { 'font-weight': 600 })).join('')
+        + (mobile ? '' : text(textX, y + 60, p.repository, 14.5, { fill: C.muted, 'font-weight': 500 })) : '';
+      slices.push({ name: p.slug + '-r' + r, win: { x0: 0, y0: y, w: infoW, h: rowH }, w: pct(infoW),
+        items: rule + head, label: r === 0 ? p.name + ' (' + p.repository + ')' : '' });
+      chunk.forEach((pr, k) => {
+        const x0 = infoW + k * cellW, w = k === chunk.length - 1 ? cellW + edgeW : cellW;
+        slices.push({ name: p.slug + '-r' + r + '-pr' + k, win: { x0, y0: y, w, h: rowH }, w: pct(w),
+          items: rule + prPill(x0 + pillGap / 2, y + (rowH - pillH) / 2, pillW, pillH, pr.number, mobile),
+          href: pr.url, label: p.name + ' merged pull request #' + pr.number });
+      });
+      y += rowH;
+    }
     first = false;
-    slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: textW, h: rowH }, w: (100 * textW / W).toFixed(4) + '%',
-      items: rule + logoTile(p, inset, y + (mobile ? 22 : 20), tile)
-        + text(textX, y + 42, p.name, nameSize, { 'font-weight': 600 })
-        + lines.map((value, n) => text(textX, y + 72 + n * (mobile ? 24 : 25), value, summarySize, { fill: C.muted, 'font-weight': 500 })).join(''),
-      label: p.name + ' — ' + p.summary });
-    const cells = two ? [[W - cellB - cellA, cellA, PILL_A], [W - cellB, cellB, PILL_B]] : [[W - cellB, cellB, PILL_B]];
-    p.prs.forEach((pr, k) => {
-      const [x0, w, pct] = cells[k];
-      slices.push({ name: p.slug + '-pr' + k, win: { x0, y0: y, w, h: rowH }, w: pct + '%',
-        items: rule + prPill(two && k === 0 ? pillAx : W - pillInset - pw, y + (rowH - pillH) / 2, pw, pillH, pr.number, mobile),
-        href: pr.url, label: p.name + ' merged pull request #' + pr.number });
-    });
-    y += rowH;
   }
   const browseH = mobile ? 68 : 76, browse = 'Browse all merged PRs on GitHub', bs = mobile ? 18 : 20;
   const browseX = (W - (measure(browse, bs, 600) + 14 + 14)) / 2; // text + gap + arrow, centred
@@ -475,7 +481,7 @@ const readme = [
   bio, '',
   '**A focused toolkit:** ' + config.tools.map(t => t.name).join(' · ') + '.', '',
   '**Selected open-source contributions:**', '',
-  ...projects.map(p => '- [' + p.name + '](https://github.com/' + p.repository + ') — ' + p.summary + ' '
+  ...projects.map(p => '- [' + p.name + '](https://github.com/' + p.repository + ') - '
     + p.prs.map(pr => '[#' + pr.number + '](' + pr.url + ')').join(', ')),
   '',
   '**Contact:** [Let’s talk](' + config.contact.email + ') · [LinkedIn](' + config.contact.linkedin + ') · [' + config.company + '](' + config.contact.website + ')', '',
