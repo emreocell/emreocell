@@ -176,9 +176,9 @@ function painting(P, win) {
   const m = P.mobile;
   return [
     rect({ x: win.x0, y: win.y0, width: win.w, height: win.h, fill: C.ink }),
-    mesh(m ? 'translate(-250 20) scale(.94)' : 'translate(60 -55)'),
-    rect({ width: P.W, height: m ? 658 : 560, fill: 'url(#shade)', opacity: m ? .68 : .78 }),
-    rect({ width: P.W, height: m ? 678 : 590, fill: 'url(#fade)' }),
+    mesh(m ? 'translate(-250 20) scale(.94)' : 'translate(40 -190)'),
+    rect({ width: P.W, height: m ? 658 : 420, fill: 'url(#shade)', opacity: m ? .68 : .74 }),
+    rect({ width: P.W, height: m ? 678 : 440, fill: 'url(#fade)' }),
     // a second, calmer glow behind the open-source rows
     group({ opacity: .72 }, mesh('translate(' + (m ? -330 : 20) + ' ' + (P.rowsTop + (m ? 60 : 30)) + ') scale(' + (m ? .8 : 1) + ')')),
     rect({ x: 0, y: P.rowsTop - 40, width: P.W, height: P.H - P.rowsTop + 40, fill: 'url(#shade)', opacity: m ? .5 : .42 }),
@@ -279,9 +279,12 @@ function roleLine(x, baseline, size, logoHeight) {
     + wordmark(x + textWidth + size * .34, baseline + logoHeight * .04, logoHeight);
 }
 
+/** Total width of the role line (text + gap + wordmark), to right-align it. */
+const roleWidth = (size, logoHeight) => measure(config.role + ' at', size, 500) + size * .34 + wordmarkWidth(logoHeight);
+
 function topBlock(P) {
   const { W, mobile: m, inset } = P;
-  const cal = calendar(inset, m ? 986 : 904, W - 2 * inset, m);
+  const cal = calendar(inset, m ? 986 : 758, W - 2 * inset, m);
   const lowest = cal.bottom + (m ? 42 : 40);
   const header = lowest + (m ? 38 : 37); // divider
   const items = m ? [
@@ -305,18 +308,18 @@ function topBlock(P) {
   ] : [
     label(inset, 66, config.credential.toUpperCase(), 17),
     label(W - inset, 66, config.location.toUpperCase(), 17, { 'text-anchor': 'end' }),
-    text(inset - 5, 224, config.name + '.', 128, { 'font-weight': 650, 'letter-spacing': -6 }),
-    roleLine(inset, 284, 23, 21),
-    text(inset, 372, config.headline[0], 39, { 'font-weight': 500, 'letter-spacing': -1.2 }),
-    text(inset, 421, config.headline[1], 39, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.2 }),
-    text(inset, 484, bio, 20, { fill: C.muted }),
-    line(542, W, inset),
-    toolkit(W, false, 592, 626, 712),
-    line(752, W, inset),
-    label(inset, 802, 'GITHUB ACTIVITY', 17),
-    text(W - inset, 802, 'UPDATED ' + updated, 15, { 'text-anchor': 'end', fill: C.muted }),
-    text(inset - 2, 872, count, Math.min(58, 190 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
-    text(inset + Math.max(139, Math.min(218, count.length * 38)), 864, 'contributions in the last 365 days', 21, { fill: C.muted }),
+    text(inset - 5, 202, config.name + '.', 128, { 'font-weight': 650, 'letter-spacing': -6 }),
+    roleLine(W - inset - roleWidth(23, 21), 202, 23, 21),
+    text(inset, 288, config.headline[0], 39, { 'font-weight': 500, 'letter-spacing': -1.2 }),
+    text(inset, 337, config.headline[1], 39, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.2 }),
+    ...config.bio.map((value, i) => text(W - inset, 298 + i * 30, value, 20, { 'text-anchor': 'end', fill: C.muted })),
+    line(396, W, inset),
+    toolkit(W, false, 446, 480, 566),
+    line(606, W, inset),
+    label(inset, 656, 'GITHUB ACTIVITY', 17),
+    text(W - inset, 656, 'UPDATED ' + updated, 15, { 'text-anchor': 'end', fill: C.muted }),
+    text(inset - 2, 726, count, Math.min(58, 190 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
+    text(inset + Math.max(139, Math.min(218, count.length * 38)), 718, 'contributions in the last 365 days', 21, { fill: C.muted }),
     cal.svg,
     text(inset, lowest, range, 15, { fill: C.muted }),
   ];
@@ -325,27 +328,29 @@ function topBlock(P) {
     label(inset, header + (m ? 46 : 48), 'OPEN SOURCE · ' + prTotal + ' MERGED PRS · ' + projects.length + ' PROJECTS', 15),
     text(inset - 1, header + (m ? 94 : 98), 'Selected contributions', m ? 36 : 40, { 'font-weight': 650, 'letter-spacing': -1 }),
     text(inset, header + (m ? 126 : 132), 'Merged into projects beyond my own repositories.', m ? 18 : 19, { fill: C.muted, 'font-weight': 500 }),
+    ...(m ? [] : [label(W - inset, header + 132, 'MERGED PULL REQUESTS', 13, { 'text-anchor': 'end', fill: C.powder })]),
   );
   return { items: items.join(''), height: Math.round(header + (m ? 158 : 166)) };
 }
 
 // ---- Rows, call to action, contact buttons --------------------------------------------------
 
-// Merged-PR pill metrics. Mobile is tighter so a pill fits the 34% cell it is cut from.
-const pillSpec = m => m ? { label: 10.5, track: 1.4, number: 16.5, pad: 14, gap: 9, arrow: 10, height: 34 }
-  : { label: 12, track: 2, number: 21, pad: 20, gap: 14, arrow: 12, height: 42 };
-function pillWidth(m) {
-  const k = pillSpec(m);
-  const widest = Math.max(...projects.flatMap(p => p.prs.map(pr => measure('#' + pr.number, k.number, 650))));
-  return Math.ceil(k.pad + measure('MERGED', k.label, 500, k.track) + k.gap + widest + k.gap + k.arrow + k.pad);
-}
-function prPill(x, y, w, number, m) {
-  const k = pillSpec(m);
-  const merged = measure('MERGED', k.label, 500, k.track);
-  return rect({ x, y, width: w, height: k.height, rx: k.height / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .2 })
-    + label(x + k.pad, y + k.height / 2 + k.label * .38, 'MERGED', k.label, { 'letter-spacing': k.track, ...NOKERN })
-    + text(x + k.pad + merged + k.gap, y + k.height / 2 + k.number * .34, '#' + number, k.number, { 'font-weight': 650, ...NOKERN })
-    + arrow(x + w - k.pad - k.arrow, y + k.height / 2 - k.arrow / 2, k.arrow);
+// Merged-PR pill: a git-merge icon and the PR number. Its width comes from the grid cell it is
+// cut from, so it is identical on desktop and mobile (the cells are percentages of the width).
+const PILL_B = 20.6, PILL_A = 17; // % of the width: the last cell, and the one before it
+const mergeIcon = (x, y, size, color = C.powder) => group({ transform: 'translate(' + x + ' ' + y + ') scale(' + size / 16 + ')',
+  fill: 'none', stroke: color, 'stroke-width': 1.7, 'stroke-linecap': 'round' }, [
+  tag('circle', { cx: 4, cy: 3, r: 2 }), tag('circle', { cx: 4, cy: 13, r: 2 }), tag('circle', { cx: 12, cy: 8, r: 2 }),
+  path({ d: 'M4 5V11M4 5C4 7.6 6.6 8 10 8' }),
+].join(''));
+function prPill(x, y, w, h, number, m) {
+  const size = m ? 16 : 22, icon = m ? 12 : 16, gap = m ? 6 : 10, arrowSize = m ? 0 : 12;
+  const content = icon + gap + measure('#' + number, size, 650) + (arrowSize ? 10 + arrowSize : 0);
+  const left = x + (w - content) / 2, middle = y + h / 2;
+  return rect({ x, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .62, stroke: C.cloud, 'stroke-opacity': .2 })
+    + mergeIcon(left, middle - icon / 2, icon)
+    + text(left + icon + gap, middle + size * .34, '#' + number, size, { 'font-weight': 650, ...NOKERN })
+    + (arrowSize ? arrow(left + content - arrowSize, middle - arrowSize / 2, arrowSize) : '');
 }
 function contactButton(x, y, w, h, contact, m) {
   const size = m ? 19 : 21;
@@ -368,33 +373,36 @@ function plan(mobile) {
   const P = { W, mobile, inset, H: 0, rowsTop: 0 };
   const top = topBlock(P);
   P.rowsTop = top.height;
-  const pw = pillWidth(mobile);
   const slices = [{ name: 'profile', win: { x0: 0, y0: 0, w: W, h: top.height }, items: top.items, w: '100%',
     label: title, desc: description, daily: true }];
   let y = top.height;
   const nameSize = mobile ? 22 : 24, summarySize = mobile ? 17 : 18.5;
   const tile = mobile ? 48 : 52, textX = inset + tile + (mobile ? 16 : 18);
+  const pillInset = mobile ? 32 : inset, pillGap = mobile ? 8 : 12, pillH = mobile ? 36 : 44;
+  const cellB = W * PILL_B / 100, cellA = W * PILL_A / 100;
+  const pw = cellB - pillInset, pillAx = W - cellB - pillGap - pw;
+  if (pillAx < W - cellB - cellA) throw new Error('Merged-PR pills do not fit their cells.');
+  let first = true;
   for (const p of projects) {
-    const lines = mobile ? wrap(p.summary, summarySize, 500, W - textX - inset) : [p.summary];
-    const infoH = mobile ? 74 + lines.length * 25 : 92, btnH = mobile ? 62 : 68;
-    slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: W, h: infoH }, w: '100%',
-      items: line(y, W, inset) + logoTile(p, inset, y + (mobile ? 22 : 20), tile)
+    const two = p.prs.length === 2;
+    const textW = W - cellB - (two ? cellA : 0);
+    const lines = wrap(p.summary, summarySize, 500, textW - textX - 16);
+    const rowH = Math.round(72 + (lines.length - 1) * (mobile ? 24 : 25) + 22);
+    const rule = first ? '' : line(y, W, inset); // no rule under the header: the panel flows straight in
+    first = false;
+    slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: textW, h: rowH }, w: (100 * textW / W).toFixed(4) + '%',
+      items: rule + logoTile(p, inset, y + (mobile ? 22 : 20), tile)
         + text(textX, y + 42, p.name, nameSize, { 'font-weight': 600 })
-        + lines.map((value, n) => text(textX, y + (mobile ? 74 : 72) + n * 25, value, summarySize, { fill: C.muted, 'font-weight': 500 })).join(''),
+        + lines.map((value, n) => text(textX, y + 72 + n * (mobile ? 24 : 25), value, summarySize, { fill: C.muted, 'font-weight': 500 })).join(''),
       label: p.name + ' — ' + p.summary });
-    y += infoH;
-    const cell = W * .34, pillX = [inset === 40 ? 40 : inset, cell + (mobile ? 8 : 16)];
-    if (pillX[0] + pw > cell - 2) throw new Error('Merged-PR pill does not fit its cell.');
+    const cells = two ? [[W - cellB - cellA, cellA, PILL_A], [W - cellB, cellB, PILL_B]] : [[W - cellB, cellB, PILL_B]];
     p.prs.forEach((pr, k) => {
-      const x0 = k * cell;
-      slices.push({ name: p.slug + '-pr' + k, win: { x0, y0: y, w: cell, h: btnH }, w: '34%',
-        items: prPill(pillX[k], y + 6, pw, pr.number, mobile), href: pr.url,
-        label: p.name + ' merged pull request #' + pr.number });
+      const [x0, w, pct] = cells[k];
+      slices.push({ name: p.slug + '-pr' + k, win: { x0, y0: y, w, h: rowH }, w: pct + '%',
+        items: rule + prPill(two && k === 0 ? pillAx : W - pillInset - pw, y + (rowH - pillH) / 2, pw, pillH, pr.number, mobile),
+        href: pr.url, label: p.name + ' merged pull request #' + pr.number });
     });
-    const used = p.prs.length * cell;
-    slices.push({ name: p.slug + '-rest', win: { x0: used, y0: y, w: W - used, h: btnH }, w: (100 - p.prs.length * 34) + '%',
-      items: '', label: '' });
-    y += btnH;
+    y += rowH;
   }
   const browseH = mobile ? 68 : 76, browse = 'Browse all merged PRs on GitHub', bs = mobile ? 18 : 20;
   slices.push({ name: 'browse-all', win: { x0: 0, y0: y, w: W, h: browseH }, w: '100%', href: mergedSearchUrl, label: browse,
