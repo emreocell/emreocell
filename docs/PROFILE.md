@@ -6,6 +6,7 @@ viewport through the README's `picture` elements). It is delivered as a stack of
 slices. Most of it is one image (the top block with name, toolkit, activity and the open-source
 header, `dist/profile.svg`); it is cut only where something has to be clickable:
 
+- every project row starts with its logo (`assets/logos/`, referenced by `logo` in the config);
 - each merged pull request is a pill button (`dist/panel/*-pr0.svg`, `*-pr1.svg`), so a project with
   two merged PRs shows two buttons side by side;
 - the "Browse all merged PRs" strip and the three contact buttons (Let's talk, LinkedIn, the

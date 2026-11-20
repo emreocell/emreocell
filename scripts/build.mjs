@@ -105,8 +105,10 @@ const projects = config.openSource.map(entry => {
     || !entry.prs.every(n => Number.isInteger(n) && n > 0)) {
     throw new Error('Invalid open-source contribution in profile.config.json (1 or 2 PRs per project).');
   }
+  if (!/^[a-z0-9-]+$/.test(entry.logo || '')) throw new Error('Missing or invalid logo for ' + entry.name + ' in profile.config.json.');
   return {
-    ...entry, slug: entry.repository.replace('/', '-').toLowerCase(),
+    ...entry, logoData: readFileSync(join(root, 'assets/logos/' + entry.logo + '.webp')).toString('base64'),
+    slug: entry.repository.replace('/', '-').toLowerCase(),
     prs: entry.prs.map(number => ({ number, url: 'https://github.com/' + entry.repository + '/pull/' + number })),
   };
 });
@@ -152,6 +154,7 @@ function defs(w, h, corners, fontData) {
       tag('feComponentTransfer', {}, tag('feFuncA', { type: 'linear', slope: .7 })),
     ].join('')),
     tag('clipPath', { id: 'canvas' }, path({ d: clip })),
+    tag('clipPath', { id: 'tile', clipPathUnits: 'objectBoundingBox' }, rect({ width: 1, height: 1, rx: .24 })),
   ].join(''));
 }
 
@@ -216,6 +219,11 @@ const arrow = (x, y, size, color = C.powder) => path({
   d: 'M' + x + ' ' + (y + size) + 'L' + (x + size) + ' ' + y + 'M' + (x + size * .12) + ' ' + y + 'H' + (x + size) + 'V' + (y + size * .88),
   fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
 });
+
+/** A project logo as a rounded tile with a hairline ring. */
+const logoTile = (project, x, y, size) => tag('image', {
+  href: 'data:image/webp;base64,' + project.logoData, x, y, width: size, height: size, 'clip-path': 'url(#tile)',
+}) + rect({ x: x + .5, y: y + .5, width: size - 1, height: size - 1, rx: size * .24, fill: 'none', stroke: C.cloud, 'stroke-opacity': .22 });
 
 // ---- Top block: the one-piece composition ---------------------------------------------------
 
@@ -365,12 +373,14 @@ function plan(mobile) {
     label: title, desc: description, daily: true }];
   let y = top.height;
   const nameSize = mobile ? 22 : 24, summarySize = mobile ? 17 : 18.5;
+  const tile = mobile ? 48 : 52, textX = inset + tile + (mobile ? 16 : 18);
   for (const p of projects) {
-    const lines = mobile ? wrap(p.summary, summarySize, 500, W - inset * 2) : [p.summary];
+    const lines = mobile ? wrap(p.summary, summarySize, 500, W - textX - inset) : [p.summary];
     const infoH = mobile ? 74 + lines.length * 25 : 92, btnH = mobile ? 62 : 68;
     slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: W, h: infoH }, w: '100%',
-      items: line(y, W, inset) + text(inset, y + 42, p.name, nameSize, { 'font-weight': 600 })
-        + lines.map((value, n) => text(inset, y + (mobile ? 74 : 72) + n * 25, value, summarySize, { fill: C.muted, 'font-weight': 500 })).join(''),
+      items: line(y, W, inset) + logoTile(p, inset, y + (mobile ? 22 : 20), tile)
+        + text(textX, y + 42, p.name, nameSize, { 'font-weight': 600 })
+        + lines.map((value, n) => text(textX, y + (mobile ? 74 : 72) + n * 25, value, summarySize, { fill: C.muted, 'font-weight': 500 })).join(''),
       label: p.name + ' — ' + p.summary });
     y += infoH;
     const cell = W * .34, pillX = [inset === 40 ? 40 : inset, cell + (mobile ? 8 : 16)];
