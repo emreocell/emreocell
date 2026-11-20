@@ -48,16 +48,18 @@ for the trace); none of it runs in CI.
 
 Generated files:
 
-- `dist/profile.svg`, `dist/profile-mobile.svg` — the top block (the only slice that changes with
-  the daily refresh).
-- `dist/panel/*.svg` — every other slice, desktop and `-mobile`.
+- `dist/profile.<hash>.svg`, `dist/profile-mobile.<hash>.svg` — the top block (the only slice that
+  changes with the daily refresh).
+- `dist/panel/*.<hash>.svg` — every other slice, desktop and `-mobile`.
 - `README.md` — the slices in order, the links around the buttons and the text equivalent, all
   generated from the same configuration and activity snapshot.
 
 The SVGs embed their font, logo paths and wordmark. They need no JavaScript, external font
 request, statistics widget, animation or third-party image host. Each has an accessible label.
-Artwork hashes in the README image URLs change whenever any image changes, reducing stale image
-caching.
+File names carry a hash of their content and the build deletes files that are no longer
+referenced. This matters: GitHub's image proxy caches by URL but fetches from `raw` by path, and
+`raw` serves a changed file under an unchanged name stale for several minutes, which would mix old
+and new slices. A new name per content makes that impossible.
 
 ## Activity
 
