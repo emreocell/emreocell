@@ -1,10 +1,13 @@
 # Profile artwork
 
-The profile is one continuous SVG composition with a separate mobile layout.
-GitHub selects the mobile SVG below a 680px viewport through the README's
-`picture` element. Contact links are native README anchors, so they remain
-clickable and keyboard accessible. A collapsed text version preserves the
-profile information for readers who cannot use the artwork.
+GitHub renders SVGs through `<img>`, so text drawn inside an SVG cannot be selected or copied, and
+README text cannot sit on top of an image. The profile therefore follows one rule: **everything a
+reader may want to copy is real README text; the SVGs are pure art.** The art is the grainy mesh
+gradient (blurred powder, pearl and blush blobs on ink, plus two grain layers), cut differently for
+each band, the toolkit logos and the contribution calendar. Name, role, bio, links, the open-source
+list and the activity numbers are native README HTML, so they are selectable, searchable and
+readable by assistive technology, and they follow the viewer's light or dark theme.
+Separate mobile images are selected below a 680px viewport through the README's `picture` elements.
 
 ## Edit and build
 
@@ -23,14 +26,15 @@ Layout and mesh drawing live in `scripts/build.mjs`.
 
 Generated files:
 
-- `dist/profile.svg` — 1200 × 1440 desktop composition.
-- `dist/profile-mobile.svg` — 640 × 1600 mobile composition.
-- `README.md` — responsive images, real contact links and an accessible text
-  equivalent, all generated from the same configuration and activity snapshot.
+- `dist/hero.svg`, `dist/band-open-source.svg`, `dist/closing.svg` — text-free gradient bands.
+- `dist/toolkit.svg`, `dist/toolkit-mobile.svg` — logo strips on the gradient.
+- `dist/profile.svg`, `dist/profile-mobile.svg` — the contribution calendar card (the only art
+  that changes with the daily refresh).
+- `README.md` — all copyable text and the image references, generated from the same configuration
+  and activity snapshot.
 
-The SVGs embed their font and logo paths. They need no JavaScript, external font
-request, statistics widget, animation or third-party image host. Both have a
-title and description. Artwork hashes in the README image URLs change whenever
+The calendar SVG embeds its font and the logo strips embed their paths. They need no JavaScript, external font
+request, statistics widget, animation or third-party image host. Each carries an accessible label, or is hidden from assistive technology when purely decorative. Artwork hashes in the README image URLs change whenever
 either composition changes, reducing stale image caching.
 
 ## Activity

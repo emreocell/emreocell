@@ -2,37 +2,73 @@
 <div align="center">
 
 <picture>
-  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=5f4647ca8e09">
-  <img src="./dist/profile.svg?v=5f4647ca8e09" alt="Emre Öcel — Full Stack Developer at Webioo. I build web products, AI agents and the systems behind them. Toolkit: PHP, MySQL, JavaScript, Python, Rust. 4,057 GitHub contributions in the last 365 days. Snapshot: 19 NOV 2026 · 11:50 UTC." width="100%">
+  <img src="./dist/hero.svg?v=bb2c52b97048" alt="" width="100%">
 </picture>
 
-<p align="center"><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
+<h1>Emre Öcel.</h1>
 
-</div>
+<p><strong>Full Stack Developer at <a href="https://webioo.com.tr/">Webioo</a></strong><br><sub>COMPUTER ENGINEER&nbsp;&nbsp;·&nbsp;&nbsp;SAMSUN, TÜRKIYE</sub></p>
 
-<div align="center">
+<h3>Thoughtful interfaces.<br>Capable systems.</h3>
+
+<p>I build web products, AI agents and the systems behind them.</p>
+
+<p><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
+
+<br>
+
+<sub>A FOCUSED TOOLKIT</sub>
+
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/toolkit-mobile.svg?v=bb2c52b97048">
+  <img src="./dist/toolkit.svg?v=bb2c52b97048" alt="Toolkit: PHP, MySQL, JavaScript, Python, Rust." width="100%">
+</picture>
+
+<p>PHP&nbsp;&nbsp;·&nbsp;&nbsp;MySQL&nbsp;&nbsp;·&nbsp;&nbsp;JavaScript&nbsp;&nbsp;·&nbsp;&nbsp;Python&nbsp;&nbsp;·&nbsp;&nbsp;Rust</p>
+
+<br>
+
+<picture>
+  <img src="./dist/band-open-source.svg?v=bb2c52b97048" alt="" width="100%">
+</picture>
+
 <h3>Selected open-source contributions</h3>
-<p><sub>Meaningful improvements merged into projects outside my own repositories.</sub></p>
-<p><strong><a href="https://github.com/stablyai/orca">Orca</a></strong>&nbsp;·&nbsp;Model-catalog cache stability and WSL watcher diagnostics.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/stablyai/orca/pull/44637">#44637</a>&nbsp;·&nbsp;<a href="https://github.com/stablyai/orca/pull/44762">#44762</a></sub></p>
-<p><strong><a href="https://github.com/The-PR-Agent/pr-agent">PR-Agent</a></strong>&nbsp;·&nbsp;Safer webhook automation and privacy-aware OpenAI logging.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/The-PR-Agent/pr-agent/pull/5022">#5022</a>&nbsp;·&nbsp;<a href="https://github.com/The-PR-Agent/pr-agent/pull/5023">#5023</a></sub></p>
-<p><strong><a href="https://github.com/awslabs/mcp">AWS MCP Servers</a></strong>&nbsp;·&nbsp;Cleanup of LibreOffice process trees on timeouts and cancellation.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/awslabs/mcp/pull/5123">#5123</a></sub></p>
-<p><strong><a href="https://github.com/repowise-dev/repowise">RepoWise</a></strong>&nbsp;·&nbsp;Hyperfine JSON benchmark support in evidence workflows.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/repowise-dev/repowise/pull/5887">#5887</a></sub></p>
-<p><strong><a href="https://github.com/ministackorg/ministack">Ministack</a></strong>&nbsp;·&nbsp;Cognito identity-provider validation to prevent invalid states.<br><sub>MERGED PRS&nbsp; <a href="https://github.com/ministackorg/ministack/pull/2745">#2745</a>&nbsp;·&nbsp;<a href="https://github.com/ministackorg/ministack/pull/2746">#2746</a></sub></p>
+
+<p><sub>Merged into projects outside my own repositories.</sub></p>
+
+<p><strong><a href="https://github.com/stablyai/orca">Orca</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Model-catalog cache stability and WSL watcher diagnostics.<br><sub>MERGED&nbsp;<a href="https://github.com/stablyai/orca/pull/44637">#44637</a> <a href="https://github.com/stablyai/orca/pull/44762">#44762</a></sub></p>
+<p><strong><a href="https://github.com/The-PR-Agent/pr-agent">PR-Agent</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Safer webhook automation and privacy-aware OpenAI logging.<br><sub>MERGED&nbsp;<a href="https://github.com/The-PR-Agent/pr-agent/pull/5022">#5022</a> <a href="https://github.com/The-PR-Agent/pr-agent/pull/5023">#5023</a></sub></p>
+<p><strong><a href="https://github.com/awslabs/mcp">AWS MCP Servers</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Cleanup of LibreOffice process trees on timeouts and cancellation.<br><sub>MERGED&nbsp;<a href="https://github.com/awslabs/mcp/pull/5123">#5123</a></sub></p>
+<p><strong><a href="https://github.com/repowise-dev/repowise">RepoWise</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Hyperfine JSON benchmark support in evidence workflows.<br><sub>MERGED&nbsp;<a href="https://github.com/repowise-dev/repowise/pull/5887">#5887</a></sub></p>
+<p><strong><a href="https://github.com/ministackorg/ministack">Ministack</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Cognito identity-provider validation to prevent invalid states.<br><sub>MERGED&nbsp;<a href="https://github.com/ministackorg/ministack/pull/2745">#2745</a> <a href="https://github.com/ministackorg/ministack/pull/2746">#2746</a></sub></p>
+
 <p><sub><a href="https://github.com/search?q=author%3Aemreocell%20is%3Apr%20is%3Amerged%20-user%3Aemreocell&amp;type=pullrequests">Browse all merged PRs</a></sub></p>
+
+<br>
+
+<sub>GITHUB ACTIVITY</sub>
+
+<p><strong>4,057</strong> contributions in the last 365 days<br><sub>20 NOV 2025 — 19 NOV 2026&nbsp;&nbsp;·&nbsp;&nbsp;UPDATED 19 NOV 2026 · 11:50 UTC</sub></p>
+
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=bb2c52b97048">
+  <img src="./dist/profile.svg?v=bb2c52b97048" alt="GitHub contribution calendar: 4,057 contributions from 2025-11-20 through 2026-11-19." width="100%">
+</picture>
+
+<p><sub><a href="https://github.com/emreocell?tab=overview">View activity on GitHub</a>&nbsp;&nbsp;·&nbsp;&nbsp;Refreshes daily</sub></p>
+
+<br>
+
+<picture>
+  <img src="./dist/closing.svg?v=bb2c52b97048" alt="" width="100%">
+</picture>
+
+<sub>HAVE SOMETHING IN MIND?</sub>
+
+<h2>Let’s build it.</h2>
+
+<p><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
+
+<sub>IDEA → INTERFACE → SYSTEM</sub>
+
 </div>
-
-<details>
-<summary>Profile in plain text</summary>
-
-**Emre Öcel** · Computer Engineer · Samsun, Türkiye<br>
-Full Stack Developer at [Webioo](https://webioo.com.tr/).
-
-I build web products, AI agents and the systems behind them.
-
-**A focused toolkit:** PHP · MySQL · JavaScript · Python · Rust.
-
-**GitHub activity:** 4,057 contributions from 2025-11-20 through 2026-11-19.<br>
-Last successful refresh: 19 NOV 2026 · 11:50 UTC. Activity refreshes daily.<br>
-[View activity on GitHub](https://github.com/emreocell?tab=overview)
-
-</details>
