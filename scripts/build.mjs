@@ -203,7 +203,7 @@ function painting(P, win) {
     // name cell is a single image: the narrow pill slices (cut at fractional pixels) stay on a dark ground
     group({ opacity: .46 }, mesh('translate(' + P.W + ' 0) scale(-1 1) translate(' + Math.round(P.W * (m ? .76 : .66) - 1105 * (m ? .8 : 1)) + ' ' + (P.rowsTop + (m ? 60 : 30)) + ') scale(' + (m ? .8 : 1) + ')')),
     rect({ x: 0, y: P.rowsTop - 40, width: P.W, height: P.H - P.rowsTop + 40, fill: 'url(#shade)', opacity: m ? .3 : .22 }),
-    tag('ellipse', { cx: P.W * .89, cy: P.H + 40, rx: P.W * .65, ry: 330, fill: 'url(#bottom)' }),
+    tag('ellipse', { cx: P.W * .95, cy: P.H + 40, rx: P.W * .62, ry: 330, fill: 'url(#bottom)', opacity: .7 }),
     // The grain must be generated for the SAME rectangle in every slice (the noise is stitched to the
     // size of its region); a per-slice rectangle gives each slice a different texture, which soft-light
     // makes visible as rectangles on the bright glow.
@@ -364,7 +364,7 @@ function topBlock(P) {
 // Open-source rows: the name cell on the left, then SLOTS equal cells (PR pills, or a "+N" pill that
 // opens the GitHub search for the rest), then a right edge, all percentages of the width so desktop
 // and mobile cut the same cells.
-const CELL = 11.2, EDGE = 5.6;
+const CELL = 12, EDGE = 5.6;
 const mergeIcon = (x, y, size, color = C.powder) => group({ transform: 'translate(' + x + ' ' + y + ') scale(' + size / 16 + ')',
   fill: 'none', stroke: color, 'stroke-width': 1.7, 'stroke-linecap': 'round' }, [
   tag('circle', { cx: 4, cy: 3, r: 2 }), tag('circle', { cx: 4, cy: 13, r: 2 }), tag('circle', { cx: 12, cy: 8, r: 2 }),
@@ -423,7 +423,7 @@ function plan(mobile) {
   let y = top.height;
   const tile = mobile ? 36 : 52, textX = inset + tile + (mobile ? 12 : 18), nameSize = mobile ? 17 : 24;
   const cellW = W * CELL / 100, edgeW = W * EDGE / 100, nameW = W - SLOTS * cellW - edgeW;
-  const pillGap = mobile ? 6 : 10, pillH = mobile ? 34 : 42, pillW = cellW - pillGap, rowH = mobile ? 76 : 80;
+  const pillGap = mobile ? 6 : 8, pillH = mobile ? 34 : 42, pillW = cellW - pillGap, rowH = mobile ? 76 : 80;
   const pct = w => (100 * w / W).toFixed(4) + '%';
   let first = true;
   for (const p of projects) {
