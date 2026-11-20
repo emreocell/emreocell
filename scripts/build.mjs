@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Offline, deterministic artwork. Refresh data with activity.mjs before building.
 //
-// Design rule: GitHub renders SVGs through <img>, so text inside an SVG can be neither selected
-// nor copied. Everything a reader may want to copy (name, role, bio, links, contribution list,
-// activity numbers) is therefore real README text. The SVGs are pure art: grainy mesh-gradient
-// bands, the toolkit logos and the contribution calendar.
+// One continuous profile composition (desktop + mobile) plus a stack of open-source cards.
+// GitHub renders SVGs through <img>, so text inside them is not selectable; the only parts that
+// must be interactive are the merged-PR cards, and each of those is its own image wrapped in a
+// native link. Text is measured with real Manrope advances (assets/fonts/manrope-metrics.json)
+// so wrapping and the Webioo logo placement are exact without a browser.
 import { readFileSync, mkdirSync, writeFileSync, renameSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,10 +16,13 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const read = path => readFileSync(join(root, path), 'utf8');
 const config = JSON.parse(read('profile.config.json'));
 const bio = config.bio.join(' ');
+const nameBreak = config.name.indexOf(' ');
+const nameLines = nameBreak < 0 ? [config.name, ''] : [config.name.slice(0, nameBreak), config.name.slice(nameBreak + 1)];
 const activity = validateActivity(JSON.parse(read('data/activity.json')));
 if (activity.login !== config.login) throw new Error('Activity and profile logins must match.');
 const C = config.palette;
 const font = readFileSync(join(root, 'assets/fonts/manrope-latin.woff2')).toString('base64');
+const metrics = JSON.parse(read('assets/fonts/manrope-metrics.json'));
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;',
 })[ch]);
@@ -29,16 +33,43 @@ const tag = (name, attributes, content = null) => {
 const group = (attrs, body) => tag('g', attrs, body);
 const rect = attrs => tag('rect', attrs);
 const path = attrs => tag('path', attrs);
+
+/** Width of `value` in px for Manrope at `weight` (kerning off, so draw it with NOKERN). */
+const measure = (value, size, weight = 500, tracking = 0) => {
+  const table = metrics[String(weight)] || metrics['500'];
+  return [...String(value)].reduce((sum, ch) => sum + (table[ch] ?? .58) * size + tracking, 0);
+};
+/** Greedy word wrap into lines no wider than `maxWidth`. */
+const wrap = (value, size, weight, maxWidth) => {
+  const lines = [];
+  let current = '';
+  for (const word of String(value).split(' ')) {
+    const next = current ? current + ' ' + word : word;
+    if (current && measure(next, size, weight) > maxWidth) { lines.push(current); current = word; } else current = next;
+  }
+  return current ? lines.concat(current) : lines;
+};
+const NOKERN = { style: 'font-kerning:none' };
+
 const text = (x, y, value, size = 24, extra = {}) => tag('text', {
   x, y, fill: C.cloud, 'font-size': size, 'font-family': 'Manrope,Arial,sans-serif',
   ...extra,
 }, escape(value));
+const label = (x, y, value, size = 20, extra = {}) => text(x, y, value, size, {
+  fill: C.muted, 'font-weight': 500, 'letter-spacing': 2, ...extra,
+});
+const line = (y, width, inset) => tag('line', {
+  x1: inset, y1: y, x2: width - inset, y2: y, stroke: C.cloud, 'stroke-opacity': .16,
+});
 const formatDate = date => new Intl.DateTimeFormat('en-GB', {
   day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC',
 }).format(new Date(date)).toUpperCase();
 const updated = formatDate(activity.updatedAt) + ' · ' + activity.updatedAt.slice(11, 16) + ' UTC';
 const range = formatDate(activity.range.from) + ' — ' + formatDate(activity.range.to);
 const count = new Intl.NumberFormat('en-US').format(activity.totalContributions);
+const title = config.name + ' — ' + config.role + ' at ' + config.company;
+const description = bio + ' Toolkit: ' + config.tools.map(t => t.name).join(', ')
+  + '. ' + count + ' GitHub contributions in the last 365 days. Snapshot: ' + updated + '.';
 const icons = config.tools.map(tool => {
   if (!/^[a-z0-9-]+$/.test(tool.slug)) throw new Error('Invalid icon slug.');
   const source = read('assets/icons/' + tool.slug + '.svg');
@@ -46,15 +77,27 @@ const icons = config.tools.map(tool => {
   if (!match) throw new Error('Missing icon path: ' + tool.slug);
   return { ...tool, d: match[1] };
 });
+// The company wordmark replaces the company name in the role line (traced vector, assets/brand).
+const brandSource = read('assets/brand/' + config.companyLogo + '.svg');
+const brand = {
+  d: brandSource.match(/ d="([^"]+)"/)[1],
+  ratio: Number(brandSource.match(/viewBox="0 0 (\d+) (\d+)"/)[1]) / Number(brandSource.match(/viewBox="0 0 (\d+) (\d+)"/)[2]),
+  box: brandSource.match(/viewBox="0 0 (\d+) (\d+)"/).slice(1, 3).map(Number),
+};
+const wordmark = (x, baseline, height) => {
+  const scale = height / brand.box[1];
+  return group({ transform: 'translate(' + x.toFixed(2) + ' ' + (baseline - height).toFixed(2) + ') scale(' + scale.toFixed(5) + ')',
+    'aria-label': config.company }, path({ d: brand.d, 'fill-rule': 'evenodd', fill: C.cloud }));
+};
 
-function defs(width, height, { withFont = false } = {}) {
+function defs(width, height) {
   const stop = (offset, color, opacity = 1) => tag('stop', {
     offset, 'stop-color': color, 'stop-opacity': opacity,
   });
   const radial = (id, stops) => tag('radialGradient', { id }, stops);
   return tag('defs', {}, [
-    withFont ? tag('style', {}, '@font-face{font-family:Manrope;src:url(data:font/woff2;base64,' + font
-      + ') format("woff2");font-style:normal;font-weight:400 800;}text{font-kerning:normal;}') : '',
+    tag('style', {}, '@font-face{font-family:Manrope;src:url(data:font/woff2;base64,' + font
+      + ') format("woff2");font-style:normal;font-weight:400 800;}text{font-kerning:normal;}'),
     radial('atmosphere', stop('0%', '#27435D', .65) + stop('55%', '#10283E', .35) + stop('100%', C.ink, 0)),
     radial('powder', stop('0%', '#CDE5F5') + stop('28%', '#9EC5E3', .92) + stop('62%', '#426C94', .68) + stop('100%', '#133756', 0)),
     radial('pearl', stop('0%', '#F4F6F7', .95) + stop('30%', '#D3E7F6', .85) + stop('70%', '#6D95B8', .38) + stop('100%', '#1D3B55', 0)),
@@ -76,10 +119,12 @@ function defs(width, height, { withFont = false } = {}) {
 
 /**
  * The grainy mesh gradient: blurred powder / pearl / blush blobs on ink, a left shade, a soft
- * bottom glow and two grain layers. `tx`, `ty` and `scale` choose which part of the mesh shows,
- * `flip` mirrors it, so every band is the same material cut differently.
+ * bottom glow and two grain layers. `tx`, `ty`, `scale` choose which part of the mesh shows and
+ * `flip` mirrors it. `zone` is how far down the left shade reaches, `fadeZone` where the mesh
+ * fades into ink, so text columns stay readable.
  */
-function art(width, height, { tx = 60, ty = -55, scale = 1, flip = false, shade = .5, fade = 0, glow = 1 } = {}) {
+function art(width, height, o = {}) {
+  const { tx = 60, ty = -55, scale = 1, flip = false, shade = .78, zone = height, fade = 1, fadeZone = height, glow = 1 } = o;
   const place = (flip ? 'translate(' + width + ' 0) scale(-1 1) ' : '')
     + 'translate(' + tx + ' ' + ty + ') scale(' + scale + ')';
   const mesh = group({ transform: place }, [
@@ -97,45 +142,46 @@ function art(width, height, { tx = 60, ty = -55, scale = 1, flip = false, shade 
     rect({ width, height, fill: C.ink }),
     mesh,
     shade ? rect({
-      width, height, fill: 'url(#shade)', opacity: shade,
+      width, height: zone, fill: 'url(#shade)', opacity: shade,
       ...(flip ? { transform: 'translate(' + width + ' 0) scale(-1 1)' } : {}),
     }) : '',
-    fade ? rect({ width, height, fill: 'url(#fade)', opacity: fade }) : '',
+    fade ? rect({ width, height: fadeZone, fill: 'url(#fade)', opacity: fade }) : '',
     glow ? tag('ellipse', { cx: width * .89, cy: height + 40, rx: width * .65, ry: 330, fill: 'url(#bottom)', opacity: glow }) : '',
     rect({ width, height, filter: 'url(#grain)', opacity: .52, style: 'mix-blend-mode:soft-light' }),
     rect({ width, height, filter: 'url(#grain)', opacity: .07 }),
   ].join(''));
 }
 
-function render(width, height, content, { label = '', withFont = false } = {}) {
+/** An SVG document; `gap` adds transparent room below so stacked card images keep an even rhythm. */
+function render(width, height, content, { label: aria = '', gap = 0, desc = '' } = {}) {
   return '<?xml version="1.0" encoding="UTF-8"?>\n' + tag('svg', {
-    xmlns: 'http://www.w3.org/2000/svg', width, height, viewBox: '0 0 ' + width + ' ' + height,
-    ...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' }),
+    xmlns: 'http://www.w3.org/2000/svg', width, height: height + gap, viewBox: '0 0 ' + width + ' ' + (height + gap),
+    ...(aria ? { role: 'img', 'aria-label': aria } : { 'aria-hidden': 'true' }),
   }, [
-    defs(width, height, { withFont }),
+    desc ? tag('title', {}, escape(aria)) + tag('desc', {}, escape(desc)) : '',
+    defs(width, height),
     content,
     rect({ x: .5, y: .5, width: width - 1, height: height - 1, rx: 23.5,
       fill: 'none', stroke: C.cloud, 'stroke-opacity': .10 }),
   ].join('\n')) + '\n';
 }
 
-// Pure art, no text: the names are real README text next to the images.
-const hero = () => render(1200, 380, art(1200, 380, { tx: 20, ty: -70, shade: .2, fade: .5 }));
-const band = () => render(1200, 120, art(1200, 120, { tx: -140, ty: -190, scale: 1.1, flip: true, shade: .3, glow: .6 }));
-const closing = () => render(1200, 180, art(1200, 180, { tx: -20, ty: -150, scale: 1.05, flip: true, shade: .3, fade: .5 }));
-
-function toolkit(width, height, mobile) {
+function toolkit(width, mobile, labelY, iconY, nameY) {
   const inset = mobile ? 40 : 64;
-  const iconSize = mobile ? 49 : 52;
+  const iconSize = mobile ? 44 : 46;
   const span = (width - inset * 2) / icons.length;
-  const logos = icons.map((icon, i) => {
+  return label(inset, labelY, 'A FOCUSED TOOLKIT', mobile ? 20 : 17) + icons.map((icon, i) => {
     const center = inset + span * (i + .5);
     const size = iconSize * (icon.opticalScale || 1);
-    return group({ 'aria-label': icon.name, transform: 'translate(' + (center - size / 2) + ' ' + ((height - size) / 2) + ') scale(' + size / 24 + ')' },
-      path({ d: icon.d, fill: '#FFFFFF' }));
+    const top = iconY + (iconSize - size) / 2;
+    return group({ 'aria-label': icon.name }, [
+      group({ transform: 'translate(' + (center - size / 2) + ' ' + top + ') scale(' + size / 24 + ')' },
+        path({ d: icon.d, fill: '#FFFFFF' })),
+      text(center, nameY, icon.name, mobile ? 19 : 20, {
+        'text-anchor': 'middle', fill: C.muted, 'font-weight': 500,
+      }),
+    ].join(''));
   }).join('');
-  return render(width, height, art(width, height, { tx: mobile ? -330 : -80, ty: -230, scale: mobile ? 1 : 1.15, shade: .55, glow: .7 }) + logos,
-    { label: 'Toolkit: ' + icons.map(i => i.name).join(', ') + '.' });
 }
 
 function calendar(x, y, width, mobile) {
@@ -155,96 +201,211 @@ function calendar(x, y, width, mobile) {
       fill: colors[level(day.contributionCount)],
     }, tag('title', {}, day.date + ': ' + day.contributionCount + ' contributions'));
   }).join('')).join('');
-  const legendY = y + step * 7 + (mobile ? 22 : 30);
+  const legendY = y + step * 7 + (mobile ? 30 : 32);
   const square = mobile ? 12 : 13;
   const legendX = x + width - (5 * (square + 6) + (mobile ? 59 : 48));
-  const legend = text(legendX - 12, legendY + square - 2, 'Less', mobile ? 20 : 17, { 'text-anchor': 'end', fill: C.muted })
+  const legend = text(legendX - 12, legendY + square - 2, 'Less', mobile ? 19 : 16, { 'text-anchor': 'end', fill: C.muted })
     + colors.map((color, i) => rect({ x: legendX + i * (square + 6), y: legendY, width: square, height: square, rx: 2, fill: color })).join('')
-    + text(x + width, legendY + square - 2, 'More', mobile ? 20 : 17, { 'text-anchor': 'end', fill: C.muted });
+    + text(x + width, legendY + square - 2, 'More', mobile ? 19 : 16, { 'text-anchor': 'end', fill: C.muted });
   return { svg: cells + legend, bottom: legendY + square };
 }
 
-function activityCard(mobile) {
-  const width = mobile ? 640 : 1200;
-  const inset = mobile ? 32 : 56;
-  const top = mobile ? 30 : 42;
-  const cal = calendar(inset, top, width - inset * 2, mobile);
-  const height = Math.round(cal.bottom + (mobile ? 30 : 42));
-  return render(width, height, art(width, height, { tx: mobile ? -420 : -190, ty: -330, scale: mobile ? .9 : 1.1, shade: .82, glow: .3 }) + cal.svg, {
-    label: 'GitHub contribution calendar: ' + count + ' contributions from ' + range + '.',
-    withFont: true,
-  });
+/** "Full Stack Developer at" + the company wordmark on one baseline. */
+function roleLine(x, baseline, size, logoHeight) {
+  const lead = config.role + ' at';
+  const textWidth = measure(lead, size, 500);
+  return text(x, baseline, lead, size, { fill: C.powder, 'font-weight': 500, ...NOKERN })
+    + wordmark(x + textWidth + size * .34, baseline + logoHeight * .04, logoHeight);
 }
 
-const outputs = {
-  'dist/hero.svg': hero(),
-  'dist/toolkit.svg': toolkit(1200, 170, false),
-  'dist/toolkit-mobile.svg': toolkit(640, 150, true),
-  'dist/band-open-source.svg': band(),
-  'dist/profile.svg': activityCard(false),
-  'dist/profile-mobile.svg': activityCard(true),
-  'dist/closing.svg': closing(),
-};
-const version = createHash('sha256').update(Object.values(outputs).join('\n')).digest('hex').slice(0, 12);
-const src = name => './dist/' + name + '.svg?v=' + version;
-const picture = (desktopName, mobileName, alt) => '<picture>\n'
-  + (mobileName ? '  <source media="(max-width: 680px)" srcset="' + src(mobileName) + '">\n' : '')
-  + '  <img src="' + src(desktopName) + '" alt="' + escape(alt) + '" width="100%">\n</picture>';
+function desktop() {
+  const width = 1200, height = 1316, inset = 64;
+  const cal = calendar(inset, 904, width - 2 * inset, false);
+  return render(width, height, [
+    art(width, height, { tx: 60, ty: -55, shade: .78, zone: 560, fadeZone: 590, glow: 1 }),
+    label(inset, 66, config.credential.toUpperCase(), 17),
+    label(width - inset, 66, config.location.toUpperCase(), 17, { 'text-anchor': 'end' }),
+    text(inset - 5, 224, config.name + '.', 128, { 'font-weight': 650, 'letter-spacing': -6 }),
+    roleLine(inset, 284, 23, 21),
+    text(inset, 372, config.headline[0], 39, { 'font-weight': 500, 'letter-spacing': -1.2 }),
+    text(inset, 421, config.headline[1], 39, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.2 }),
+    text(inset, 484, bio, 20, { fill: C.muted }),
+    line(542, width, inset),
+    toolkit(width, false, 592, 626, 712),
+    line(752, width, inset),
+    label(inset, 802, 'GITHUB ACTIVITY', 17),
+    text(width - inset, 802, 'UPDATED ' + updated, 15, { 'text-anchor': 'end', fill: C.muted }),
+    text(inset - 2, 872, count, Math.min(58, 190 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
+    text(inset + Math.max(139, Math.min(218, count.length * 38)), 864, 'contributions in the last 365 days', 21, { fill: C.muted }),
+    cal.svg,
+    text(inset, cal.bottom + 40, range, 15, { fill: C.muted }),
+    line(1138, width, inset),
+    text(inset, 1190, config.cta.eyebrow, 21, { fill: C.muted }),
+    text(inset - 3, 1262, config.cta.title, 66, { 'font-weight': 600, 'letter-spacing': -2.2 }),
+    text(width - inset, 1256, config.cta.note, 16, {
+      'text-anchor': 'end', fill: C.powder, 'letter-spacing': 1,
+    }),
+  ].join(''), { label: title, desc: description });
+}
 
-const link = (label, href) => '<a href="' + escape(href) + '">' + label + '</a>';
-const dot = '&nbsp;&nbsp;·&nbsp;&nbsp;';
-const selectedContributions = config.openSource.map(entry => {
+function mobile() {
+  const width = 640, height = 1374, inset = 40, d = 18; // d: extra room under the two-line name
+  const cal = calendar(inset, 968 + d, width - 2 * inset, true);
+  return render(width, height, [
+    art(width, height, { tx: -250, ty: 20, scale: .94, shade: .68, zone: 658, fadeZone: 678, glow: 1 }),
+    label(inset, 58, config.credential.toUpperCase(), 19),
+    text(inset - 4, 178, nameLines[0], 108, { 'font-weight': 650, 'letter-spacing': -4.5 }),
+    text(inset - 4, 178 + 118, nameLines[1] + '.', 108, { 'font-weight': 650, 'letter-spacing': -4.5 }),
+    roleLine(inset, 332 + d, 24, 22),
+    text(inset, 372 + d, config.location, 21, { fill: C.muted }),
+    text(inset, 448 + d, config.headline[0], 34, { 'font-weight': 500, 'letter-spacing': -1.1 }),
+    text(inset, 494 + d, config.headline[1], 34, { fill: C.powder, 'font-weight': 500, 'letter-spacing': -1.1 }),
+    ...config.bio.map((value, i) => text(inset, 552 + d + i * 33, value, 23, { fill: C.muted })),
+    line(630 + d, width, inset),
+    toolkit(width, true, 676 + d, 706 + d, 784 + d),
+    line(826 + d, width, inset),
+    label(inset, 872 + d, 'GITHUB ACTIVITY', 19),
+    text(inset - 2, 936 + d, count, Math.min(64, 150 / (count.length * .66)), { 'font-weight': 600, 'letter-spacing': -1 }),
+    text(inset + 168, 912 + d, 'contributions', 22, { fill: C.muted }),
+    text(inset + 168, 942 + d, 'last 365 days', 22, { fill: C.muted }),
+    cal.svg,
+    text(inset, cal.bottom + 42, 'Updated ' + formatDate(activity.updatedAt) + ' · ' + activity.updatedAt.slice(11, 16) + ' UTC', 20, { fill: C.muted }),
+    line(1182 + d, width, inset),
+    text(inset, 1234 + d, config.cta.eyebrow, 24, { fill: C.muted }),
+    text(inset - 2, 1308 + d, config.cta.title, 62, { 'font-weight': 600, 'letter-spacing': -2 }),
+  ].join(''), { label: title, desc: description });
+}
+
+// ---- Open-source cards: every merged PR is one image wrapped in a native link. ----------------
+
+const pullRequests = config.openSource.flatMap(entry => {
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(entry.repository)
     || !entry.name || !entry.summary || !Array.isArray(entry.prs) || !entry.prs.length
     || !entry.prs.every(n => Number.isInteger(n) && n > 0)) {
     throw new Error('Invalid open-source contribution in profile.config.json.');
   }
-  const url = 'https://github.com/' + entry.repository;
-  const prs = entry.prs.map(n => link('#' + n, url + '/pull/' + n)).join(' ');
-  return '<p><strong>' + link(escape(entry.name), url) + '</strong>' + dot + escape(entry.summary)
-    + '<br><sub>MERGED&nbsp;' + prs + '</sub></p>';
-}).join('\n');
+  return entry.prs.map(number => ({
+    name: entry.name, summary: entry.summary, number,
+    slug: entry.repository.replace('/', '-').toLowerCase() + '-' + number,
+    url: 'https://github.com/' + entry.repository + '/pull/' + number,
+  }));
+});
+const projectCount = new Set(config.openSource.map(e => e.repository)).size;
 const mergedSearchUrl = 'https://github.com/search?q='
   + encodeURIComponent('author:' + config.login + ' is:pr is:merged -user:' + config.login)
   + '&type=pullrequests';
+const arrow = (x, y, size) => path({
+  d: 'M' + x + ' ' + (y + size) + 'L' + (x + size) + ' ' + y + 'M' + (x + size * .12) + ' ' + y + 'H' + (x + size) + 'V' + (y + size * .88),
+  fill: 'none', stroke: C.powder, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+});
+// Each card shows another part of the same mesh, always with the glow to the right so the text
+// column stays dark; only height, size and the exact spot vary.
+const cut = (i, width) => ({ tx: Math.round(width * (width < 800 ? 1.04 : .8) - 1105 + ((i * 83) % 120) - 60), ty: -230 - ((i * 53) % 120), scale: 1 + (i % 3) * .07 });
 
+function prCard(pr, i, mobile) {
+  const width = mobile ? 640 : 1200, pad = mobile ? 28 : 40;
+  const pill = (x, y, h) => {
+    const tracking = 2;
+    const merged = measure('MERGED', 12, 500, tracking);
+    const number = measure('#' + pr.number, mobile ? 19 : 21, 650);
+    const w = 20 + merged + 14 + number + 12 + 12 + 20;
+    const left = x - w;
+    return rect({ x: left, y, width: w, height: h, rx: h / 2, fill: C.ink, 'fill-opacity': .66,
+      stroke: C.cloud, 'stroke-opacity': .16 })
+      + label(left + 20, y + h / 2 + 4.5, 'MERGED', 12, { 'letter-spacing': tracking, ...NOKERN })
+      + text(left + 20 + merged + 14, y + h / 2 + 7, '#' + pr.number, mobile ? 19 : 21, { 'font-weight': 650, ...NOKERN })
+      + arrow(left + w - 20 - 12, y + h / 2 - 6, 12);
+  };
+  const alt = pr.name + ' — ' + pr.summary + ' Merged pull request #' + pr.number + '.';
+  if (!mobile) {
+    const height = 96;
+    return { alt, svg: render(width, height, [
+      art(width, height, { ...cut(i, width), shade: .96, glow: .3 }),
+      text(pad, 41, pr.name, 24, { 'font-weight': 600 }),
+      text(pad, 71, pr.summary, 18.5, { fill: C.muted, 'font-weight': 500 }),
+      pill(width - pad, 26, 44),
+    ].join(''), { label: alt, gap: 8 }) };
+  }
+  const lines = wrap(pr.summary, 17, 500, width - pad * 2 - 90); // keep text clear of the glow
+  const height = 78 + lines.length * 25 + 14;
+  return { alt, svg: render(width, height, [
+    art(width, height, { ...cut(i, width), shade: .97, glow: .3 }),
+    text(pad, 44, pr.name, 22, { 'font-weight': 600 }),
+    pill(width - pad, 18, 38),
+    ...lines.map((value, n) => text(pad, 82 + n * 25, value, 17, { fill: C.muted, 'font-weight': 500 })),
+  ].join(''), { label: alt, gap: 8 }) };
+}
+
+function ossHeader(mobile) {
+  const width = mobile ? 640 : 1200, height = mobile ? 150 : 148, pad = mobile ? 28 : 40;
+  const alt = 'Selected open-source contributions: ' + pullRequests.length + ' merged pull requests across '
+    + projectCount + ' projects.';
+  return { alt, svg: render(width, height, [
+    art(width, height, { tx: mobile ? -300 : -60, ty: -140, scale: 1.1, shade: .66, glow: .5 }),
+    label(pad, mobile ? 50 : 56, 'OPEN SOURCE', mobile ? 15 : 16),
+    text(pad - 1, mobile ? 94 : 104, 'Selected contributions', mobile ? 33 : 40, { 'font-weight': 650, 'letter-spacing': -1 }),
+    text(pad, mobile ? 125 : 134, 'Merged into projects beyond my own repositories.', mobile ? 17 : 18.5, { fill: C.muted, 'font-weight': 500 }),
+    ...(mobile ? [] : [
+      text(width - pad, 100, String(pullRequests.length), 56, { 'text-anchor': 'end', 'font-weight': 600, 'letter-spacing': -1.5 }),
+      label(width - pad, 128, 'MERGED PRS · ' + projectCount + ' PROJECTS', 13, { 'text-anchor': 'end' }),
+    ]),
+  ].join(''), { label: alt, gap: 8 }) };
+}
+
+function ossFooter(mobile) {
+  const width = mobile ? 640 : 1200, height = mobile ? 64 : 72;
+  const words = 'Browse all merged PRs on GitHub';
+  const size = mobile ? 18 : 20, w = measure(words, size, 600), x = (width - (w + 30)) / 2;
+  return { alt: words, svg: render(width, height, [
+    art(width, height, { tx: mobile ? -260 : 120, ty: -300, scale: 1.2, flip: true, shade: .55, glow: .4 }),
+    text(x, height / 2 + size * .36, words, size, { fill: C.powder, 'font-weight': 600, ...NOKERN }),
+    arrow(x + w + 14, height / 2 - 7, 14),
+  ].join(''), { label: words, gap: 8 }) };
+}
+
+const outputs = { 'dist/profile.svg': desktop(), 'dist/profile-mobile.svg': mobile() };
+const cards = [];
+const addCard = (name, make, href) => {
+  const desktopCard = make(false), mobileCard = make(true);
+  outputs['dist/open-source/' + name + '.svg'] = desktopCard.svg;
+  outputs['dist/open-source/' + name + '-mobile.svg'] = mobileCard.svg;
+  cards.push({ name, alt: desktopCard.alt, href });
+};
+addCard('header', mobileFlag => ossHeader(mobileFlag));
+pullRequests.forEach((pr, i) => addCard(pr.slug, mobileFlag => prCard(pr, i, mobileFlag), pr.url));
+addCard('browse-all', mobileFlag => ossFooter(mobileFlag), mergedSearchUrl);
+
+const version = createHash('sha256').update(Object.values(outputs).join('\n')).digest('hex').slice(0, 12);
+const picture = (name, alt, width = '100%') => '<picture>\n'
+  + '  <source media="(max-width: 680px)" srcset="./dist/' + name + '-mobile.svg?v=' + version + '">\n'
+  + '  <img src="./dist/' + name + '.svg?v=' + version + '" alt="' + escape(alt) + '" width="' + width + '">\n</picture>';
+const cardMarkup = cards.map(card => {
+  const image = picture('open-source/' + card.name, card.alt);
+  return card.href ? '<a href="' + escape(card.href) + '">\n' + image + '\n</a>' : image;
+}).join('\n');
 const readme = [
   '<!-- Generated by scripts/build.mjs. Edit profile.config.json or the renderer. -->',
   '<div align="center">', '',
-  picture('hero', null, ''), '',
-  '<h1>' + escape(config.name) + '.</h1>', '',
-  '<p><strong>' + escape(config.role) + ' at ' + link(escape(config.company), config.contact.website) + '</strong><br>'
-    + '<sub>' + escape(config.credential.toUpperCase()) + dot + escape(config.location.toUpperCase()) + '</sub></p>', '',
-  '<h3>' + config.headline.map(escape).join('<br>') + '</h3>', '',
-  '<p>' + escape(bio) + '</p>', '',
-  '<p>' + link('<strong>Let’s talk</strong>', config.contact.email) + dot
-    + link('LinkedIn', config.contact.linkedin) + dot + link('Webioo', config.contact.website) + '</p>', '',
-  '<br>', '',
-  '<sub>A FOCUSED TOOLKIT</sub>', '',
-  picture('toolkit', 'toolkit-mobile', 'Toolkit: ' + icons.map(i => i.name).join(', ') + '.'), '',
-  '<p>' + icons.map(i => escape(i.name)).join(dot) + '</p>', '',
-  '<br>', '',
-  picture('band-open-source', null, ''), '',
-  '<h3>Selected open-source contributions</h3>', '',
-  '<p><sub>Merged into projects outside my own repositories.</sub></p>', '',
-  selectedContributions, '',
-  '<p><sub>' + link('Browse all merged PRs', mergedSearchUrl) + '</sub></p>', '',
-  '<br>', '',
-  '<sub>GITHUB ACTIVITY</sub>', '',
-  '<p><strong>' + count + '</strong> contributions in the last 365 days<br>'
-    + '<sub>' + range + dot + 'UPDATED ' + updated + '</sub></p>', '',
-  picture('profile', 'profile-mobile', 'GitHub contribution calendar: ' + count + ' contributions from '
-    + activity.range.from + ' through ' + activity.range.to + '.'), '',
-  '<p><sub>' + link('View activity on GitHub', 'https://github.com/' + config.login + '?tab=overview')
-    + dot + 'Refreshes daily</sub></p>', '',
-  '<br>', '',
-  picture('closing', null, ''), '',
-  '<sub>' + escape(config.cta.eyebrow.toUpperCase()) + '</sub>', '',
-  '<h2>' + escape(config.cta.title) + '</h2>', '',
-  '<p>' + link('<strong>Let’s talk</strong>', config.contact.email) + dot
-    + link('LinkedIn', config.contact.linkedin) + dot + link('Webioo', config.contact.website) + '</p>', '',
-  '<sub>' + escape(config.cta.note) + '</sub>', '',
+  picture('profile', title + '. ' + description), '',
+  '<p align="center"><a href="' + escape(config.contact.email) + '"><strong>Let’s talk</strong></a>'
+    + '&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' + escape(config.contact.linkedin) + '">LinkedIn</a>'
+    + '&nbsp;&nbsp;·&nbsp;&nbsp;<a href="' + escape(config.contact.website) + '">' + escape(config.company) + '</a></p>', '',
+  cardMarkup, '',
   '</div>', '',
+  '<details>',
+  '<summary>Profile in plain text</summary>', '',
+  '**' + config.name + '** · ' + config.credential + ' · ' + config.location + '<br>',
+  config.role + ' at [' + config.company + '](' + config.contact.website + ').', '',
+  bio, '',
+  '**A focused toolkit:** ' + config.tools.map(t => t.name).join(' · ') + '.', '',
+  '**Selected open-source contributions:**', '',
+  ...config.openSource.map(e => '- [' + e.name + '](https://github.com/' + e.repository + ') — ' + e.summary + ' '
+    + e.prs.map(n => '[#' + n + '](https://github.com/' + e.repository + '/pull/' + n + ')').join(', ')),
+  '',
+  '**GitHub activity:** ' + count + ' contributions from ' + activity.range.from + ' through ' + activity.range.to + '.<br>',
+  'Last successful refresh: ' + updated + '. Activity refreshes daily.<br>',
+  '[View activity on GitHub](https://github.com/' + config.login + '?tab=overview)', '',
+  '</details>', '',
 ].join('\n');
 
 // Prepare every output before touching a previous good render.
@@ -256,4 +417,4 @@ for (const [relative, content] of Object.entries(outputs)) {
   writeFileSync(temporary, content);
   renameSync(temporary, output);
 }
-console.log('Built profile artwork and README from ' + activity.updatedAt + '.');
+console.log('Built profile artwork from ' + activity.updatedAt + ' (' + Object.keys(outputs).length + ' files).');

@@ -1,13 +1,15 @@
 # Profile artwork
 
-GitHub renders SVGs through `<img>`, so text drawn inside an SVG cannot be selected or copied, and
-README text cannot sit on top of an image. The profile therefore follows one rule: **everything a
-reader may want to copy is real README text; the SVGs are pure art.** The art is the grainy mesh
-gradient (blurred powder, pearl and blush blobs on ink, plus two grain layers), cut differently for
-each band, the toolkit logos and the contribution calendar. Name, role, bio, links, the open-source
-list and the activity numbers are native README HTML, so they are selectable, searchable and
-readable by assistive technology, and they follow the viewer's light or dark theme.
-Separate mobile images are selected below a 680px viewport through the README's `picture` elements.
+The profile is one continuous SVG composition with a separate mobile layout. GitHub selects the
+mobile SVG below a 680px viewport through the README's `picture` element. Below it sits a stack
+of open-source cards: one header, one card per merged pull request and a "browse all" card. Each
+pull-request card is its own image wrapped in a native link, so the merged-PR area is the part
+of the artwork that is clickable. The contact links are native README anchors too. A collapsed text
+version preserves all the information, including the pull-request links, as copyable text for
+readers who cannot use the artwork.
+
+GitHub shows SVGs through `<img>`: text inside them cannot be selected and nothing can be layered
+on top of them. That is why only whole cards are links and why the plain-text section exists.
 
 ## Edit and build
 
@@ -18,24 +20,30 @@ required for a normal build.
 node scripts/build.mjs
 ```
 
-Edit `profile.config.json` for identity, copy, palette, links and the five core
-tools. The two biography lines are joined on desktop and arranged separately
-on mobile. Keep copy concise and inspect both layouts after changing it.
-`opticalScale` balances wide logo shapes without altering their geometry.
-Layout and mesh drawing live in `scripts/build.mjs`.
+Edit `profile.config.json` for identity, copy, palette, links, the five core tools and the
+open-source list (`openSource`: repository, display name, one-line summary, merged PR numbers).
+The two biography lines are joined on desktop and arranged separately on mobile. Keep copy concise
+and inspect both layouts after changing it. `opticalScale` balances wide logo shapes without
+altering their geometry. `companyLogo` names the wordmark in `assets/brand/` that replaces the
+company name in the role line. Layout and mesh drawing live in `scripts/build.mjs`.
+
+Text is measured offline with real Manrope advances from `assets/fonts/manrope-metrics.json`
+(for wrapping and for placing the wordmark right after "Full Stack Developer at"). To regenerate
+the metrics or re-trace a logo from a transparent PNG, see `scripts/tools/` (Python with
+`fonttools` and `brotli`, plus `opencv-python` for the trace); neither runs in CI.
 
 Generated files:
 
-- `dist/hero.svg`, `dist/band-open-source.svg`, `dist/closing.svg` — text-free gradient bands.
-- `dist/toolkit.svg`, `dist/toolkit-mobile.svg` — logo strips on the gradient.
-- `dist/profile.svg`, `dist/profile-mobile.svg` — the contribution calendar card (the only art
-  that changes with the daily refresh).
-- `README.md` — all copyable text and the image references, generated from the same configuration
-  and activity snapshot.
+- `dist/profile.svg` — 1200 × 1316 desktop composition.
+- `dist/profile-mobile.svg` — 640 × 1374 mobile composition.
+- `dist/open-source/*.svg` — desktop and `-mobile` cards (header, one per merged PR, browse all).
+- `README.md` — responsive images, the links around the cards and the text equivalent, all
+  generated from the same configuration and activity snapshot.
 
-The calendar SVG embeds its font and the logo strips embed their paths. They need no JavaScript, external font
-request, statistics widget, animation or third-party image host. Each carries an accessible label, or is hidden from assistive technology when purely decorative. Artwork hashes in the README image URLs change whenever
-either composition changes, reducing stale image caching.
+The SVGs embed their font, logo paths and wordmark. They need no JavaScript, external font
+request, statistics widget, animation or third-party image host. Each has an accessible label.
+Artwork hashes in the README image URLs change whenever any image changes, reducing stale image
+caching.
 
 ## Activity
 

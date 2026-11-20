@@ -2,73 +2,93 @@
 <div align="center">
 
 <picture>
-  <img src="./dist/hero.svg?v=bb2c52b97048" alt="" width="100%">
+  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/profile.svg?v=c7d852fcdf30" alt="Emre Öcel — Full Stack Developer at Webioo. I build web products, AI agents and the systems behind them. Toolkit: PHP, MySQL, JavaScript, Python, Rust. 4,057 GitHub contributions in the last 365 days. Snapshot: 19 NOV 2026 · 11:50 UTC." width="100%">
 </picture>
 
-<h1>Emre Öcel.</h1>
-
-<p><strong>Full Stack Developer at <a href="https://webioo.com.tr/">Webioo</a></strong><br><sub>COMPUTER ENGINEER&nbsp;&nbsp;·&nbsp;&nbsp;SAMSUN, TÜRKIYE</sub></p>
-
-<h3>Thoughtful interfaces.<br>Capable systems.</h3>
-
-<p>I build web products, AI agents and the systems behind them.</p>
-
-<p><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
-
-<br>
-
-<sub>A FOCUSED TOOLKIT</sub>
+<p align="center"><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
 
 <picture>
-  <source media="(max-width: 680px)" srcset="./dist/toolkit-mobile.svg?v=bb2c52b97048">
-  <img src="./dist/toolkit.svg?v=bb2c52b97048" alt="Toolkit: PHP, MySQL, JavaScript, Python, Rust." width="100%">
+  <source media="(max-width: 680px)" srcset="./dist/open-source/header-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/header.svg?v=c7d852fcdf30" alt="Selected open-source contributions: 8 merged pull requests across 5 projects." width="100%">
 </picture>
-
-<p>PHP&nbsp;&nbsp;·&nbsp;&nbsp;MySQL&nbsp;&nbsp;·&nbsp;&nbsp;JavaScript&nbsp;&nbsp;·&nbsp;&nbsp;Python&nbsp;&nbsp;·&nbsp;&nbsp;Rust</p>
-
-<br>
-
+<a href="https://github.com/stablyai/orca/pull/44637">
 <picture>
-  <img src="./dist/band-open-source.svg?v=bb2c52b97048" alt="" width="100%">
+  <source media="(max-width: 680px)" srcset="./dist/open-source/stablyai-orca-44637-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/stablyai-orca-44637.svg?v=c7d852fcdf30" alt="Orca — Model-catalog cache stability and WSL watcher diagnostics. Merged pull request #44637." width="100%">
 </picture>
-
-<h3>Selected open-source contributions</h3>
-
-<p><sub>Merged into projects outside my own repositories.</sub></p>
-
-<p><strong><a href="https://github.com/stablyai/orca">Orca</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Model-catalog cache stability and WSL watcher diagnostics.<br><sub>MERGED&nbsp;<a href="https://github.com/stablyai/orca/pull/44637">#44637</a> <a href="https://github.com/stablyai/orca/pull/44762">#44762</a></sub></p>
-<p><strong><a href="https://github.com/The-PR-Agent/pr-agent">PR-Agent</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Safer webhook automation and privacy-aware OpenAI logging.<br><sub>MERGED&nbsp;<a href="https://github.com/The-PR-Agent/pr-agent/pull/5022">#5022</a> <a href="https://github.com/The-PR-Agent/pr-agent/pull/5023">#5023</a></sub></p>
-<p><strong><a href="https://github.com/awslabs/mcp">AWS MCP Servers</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Cleanup of LibreOffice process trees on timeouts and cancellation.<br><sub>MERGED&nbsp;<a href="https://github.com/awslabs/mcp/pull/5123">#5123</a></sub></p>
-<p><strong><a href="https://github.com/repowise-dev/repowise">RepoWise</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Hyperfine JSON benchmark support in evidence workflows.<br><sub>MERGED&nbsp;<a href="https://github.com/repowise-dev/repowise/pull/5887">#5887</a></sub></p>
-<p><strong><a href="https://github.com/ministackorg/ministack">Ministack</a></strong>&nbsp;&nbsp;·&nbsp;&nbsp;Cognito identity-provider validation to prevent invalid states.<br><sub>MERGED&nbsp;<a href="https://github.com/ministackorg/ministack/pull/2745">#2745</a> <a href="https://github.com/ministackorg/ministack/pull/2746">#2746</a></sub></p>
-
-<p><sub><a href="https://github.com/search?q=author%3Aemreocell%20is%3Apr%20is%3Amerged%20-user%3Aemreocell&amp;type=pullrequests">Browse all merged PRs</a></sub></p>
-
-<br>
-
-<sub>GITHUB ACTIVITY</sub>
-
-<p><strong>4,057</strong> contributions in the last 365 days<br><sub>20 NOV 2025 — 19 NOV 2026&nbsp;&nbsp;·&nbsp;&nbsp;UPDATED 19 NOV 2026 · 11:50 UTC</sub></p>
-
+</a>
+<a href="https://github.com/stablyai/orca/pull/44762">
 <picture>
-  <source media="(max-width: 680px)" srcset="./dist/profile-mobile.svg?v=bb2c52b97048">
-  <img src="./dist/profile.svg?v=bb2c52b97048" alt="GitHub contribution calendar: 4,057 contributions from 2025-11-20 through 2026-11-19." width="100%">
+  <source media="(max-width: 680px)" srcset="./dist/open-source/stablyai-orca-44762-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/stablyai-orca-44762.svg?v=c7d852fcdf30" alt="Orca — Model-catalog cache stability and WSL watcher diagnostics. Merged pull request #44762." width="100%">
 </picture>
-
-<p><sub><a href="https://github.com/emreocell?tab=overview">View activity on GitHub</a>&nbsp;&nbsp;·&nbsp;&nbsp;Refreshes daily</sub></p>
-
-<br>
-
+</a>
+<a href="https://github.com/The-PR-Agent/pr-agent/pull/5022">
 <picture>
-  <img src="./dist/closing.svg?v=bb2c52b97048" alt="" width="100%">
+  <source media="(max-width: 680px)" srcset="./dist/open-source/the-pr-agent-pr-agent-5022-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/the-pr-agent-pr-agent-5022.svg?v=c7d852fcdf30" alt="PR-Agent — Safer webhook automation and privacy-aware OpenAI logging. Merged pull request #5022." width="100%">
 </picture>
-
-<sub>HAVE SOMETHING IN MIND?</sub>
-
-<h2>Let’s build it.</h2>
-
-<p><a href="mailto:emreocell1219@gmail.com"><strong>Let’s talk</strong></a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.linkedin.com/in/emreocell/">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://webioo.com.tr/">Webioo</a></p>
-
-<sub>IDEA → INTERFACE → SYSTEM</sub>
+</a>
+<a href="https://github.com/The-PR-Agent/pr-agent/pull/5023">
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/open-source/the-pr-agent-pr-agent-5023-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/the-pr-agent-pr-agent-5023.svg?v=c7d852fcdf30" alt="PR-Agent — Safer webhook automation and privacy-aware OpenAI logging. Merged pull request #5023." width="100%">
+</picture>
+</a>
+<a href="https://github.com/awslabs/mcp/pull/5123">
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/open-source/awslabs-mcp-5123-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/awslabs-mcp-5123.svg?v=c7d852fcdf30" alt="AWS MCP Servers — Cleanup of LibreOffice process trees on timeouts and cancellation. Merged pull request #5123." width="100%">
+</picture>
+</a>
+<a href="https://github.com/repowise-dev/repowise/pull/5887">
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/open-source/repowise-dev-repowise-5887-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/repowise-dev-repowise-5887.svg?v=c7d852fcdf30" alt="RepoWise — Hyperfine JSON benchmark support in evidence workflows. Merged pull request #5887." width="100%">
+</picture>
+</a>
+<a href="https://github.com/ministackorg/ministack/pull/2745">
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/open-source/ministackorg-ministack-2745-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/ministackorg-ministack-2745.svg?v=c7d852fcdf30" alt="Ministack — Cognito identity-provider validation to prevent invalid states. Merged pull request #2745." width="100%">
+</picture>
+</a>
+<a href="https://github.com/ministackorg/ministack/pull/2746">
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/open-source/ministackorg-ministack-2746-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/ministackorg-ministack-2746.svg?v=c7d852fcdf30" alt="Ministack — Cognito identity-provider validation to prevent invalid states. Merged pull request #2746." width="100%">
+</picture>
+</a>
+<a href="https://github.com/search?q=author%3Aemreocell%20is%3Apr%20is%3Amerged%20-user%3Aemreocell&amp;type=pullrequests">
+<picture>
+  <source media="(max-width: 680px)" srcset="./dist/open-source/browse-all-mobile.svg?v=c7d852fcdf30">
+  <img src="./dist/open-source/browse-all.svg?v=c7d852fcdf30" alt="Browse all merged PRs on GitHub" width="100%">
+</picture>
+</a>
 
 </div>
+
+<details>
+<summary>Profile in plain text</summary>
+
+**Emre Öcel** · Computer Engineer · Samsun, Türkiye<br>
+Full Stack Developer at [Webioo](https://webioo.com.tr/).
+
+I build web products, AI agents and the systems behind them.
+
+**A focused toolkit:** PHP · MySQL · JavaScript · Python · Rust.
+
+**Selected open-source contributions:**
+
+- [Orca](https://github.com/stablyai/orca) — Model-catalog cache stability and WSL watcher diagnostics. [#44637](https://github.com/stablyai/orca/pull/44637), [#44762](https://github.com/stablyai/orca/pull/44762)
+- [PR-Agent](https://github.com/The-PR-Agent/pr-agent) — Safer webhook automation and privacy-aware OpenAI logging. [#5022](https://github.com/The-PR-Agent/pr-agent/pull/5022), [#5023](https://github.com/The-PR-Agent/pr-agent/pull/5023)
+- [AWS MCP Servers](https://github.com/awslabs/mcp) — Cleanup of LibreOffice process trees on timeouts and cancellation. [#5123](https://github.com/awslabs/mcp/pull/5123)
+- [RepoWise](https://github.com/repowise-dev/repowise) — Hyperfine JSON benchmark support in evidence workflows. [#5887](https://github.com/repowise-dev/repowise/pull/5887)
+- [Ministack](https://github.com/ministackorg/ministack) — Cognito identity-provider validation to prevent invalid states. [#2745](https://github.com/ministackorg/ministack/pull/2745), [#2746](https://github.com/ministackorg/ministack/pull/2746)
+
+**GitHub activity:** 4,057 contributions from 2025-11-20 through 2026-11-19.<br>
+Last successful refresh: 19 NOV 2026 · 11:50 UTC. Activity refreshes daily.<br>
+[View activity on GitHub](https://github.com/emreocell?tab=overview)
+
+</details>

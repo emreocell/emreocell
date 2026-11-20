@@ -20,3 +20,7 @@ curl -fsSL 'https://raw.githubusercontent.com/google/fonts/c30b221beb0c1da59d563
 fonttools varLib.instancer /tmp/profile-manrope.ttf wght=400:400:800 --update-name-table --no-recalc-timestamp --output /tmp/profile-manrope-400-800.ttf
 pyftsubset /tmp/profile-manrope-400-800.ttf --unicodes='U+0020-007E,U+00A0,U+00A9,U+00B7,U+00C7,U+00D6,U+00DC,U+00E7,U+00F6,U+00FC,U+011E-011F,U+0130-0131,U+015E-015F,U+2013-2014,U+2018-201D,U+2022,U+2026,U+2190-2193,U+2212' --flavor=woff2 --layout-features='*' --name-IDs='*' --no-recalc-timestamp --output-file=assets/fonts/manrope-latin.woff2
 ```
+
+## Text metrics
+
+`manrope-metrics.json` holds per-character advance widths (in em) at weights 500, 600 and 650, generated from this font with `scripts/tools/font-metrics.py`. The offline build uses it to wrap text and place the company wordmark; text that is measured this way is drawn with `font-kerning:none` so the numbers match.
