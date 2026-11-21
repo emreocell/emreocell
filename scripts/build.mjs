@@ -121,12 +121,24 @@ const projects = config.openSource.map(entry => {
   }
   if (!/^[a-z0-9-]+$/.test(entry.logo || '')) throw new Error('Missing or invalid logo for ' + entry.name + ' in profile.config.json.');
   const live = entry.dynamic ? contributions?.repositories?.[entry.repository] : null;
-  const prs = (live?.length ? live : entry.prs).map(number => ({ number, url: 'https://github.com/' + entry.repository + '/pull/' + number }));
+  const pullUrl = (repository, number) => 'https://github.com/' + repository + '/pull/' + number;
+  // `also` groups further repositories of the same owner under one row (e.g. AWS: awslabs/mcp and
+  // cdklabs/cdk-from-cfn): { repository, prs: [numbers] }, shown after the main repository's PRs.
+  const also = entry.also ?? [];
+  if (!Array.isArray(also) || !also.every(a => /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(a?.repository)
+    && Array.isArray(a.prs) && a.prs.length > 0 && a.prs.every(n => Number.isInteger(n) && n > 0))) {
+    throw new Error('Invalid "also" repositories for ' + entry.name + ' in profile.config.json.');
+  }
+  const prs = [
+    ...(live?.length ? live : entry.prs).map(number => ({ number, repository: entry.repository, url: pullUrl(entry.repository, number) })),
+    ...also.flatMap(a => a.prs.map(number => ({ number, repository: a.repository, url: pullUrl(a.repository, number) }))),
+  ];
   const shown = prs.length > PILLS ? prs.slice(0, PILLS) : prs;
   return {
     ...entry, logoData: readFileSync(join(root, 'assets/logos/' + entry.logo + '.webp')).toString('base64'),
     slug: entry.repository.replace('/', '-').toLowerCase(), prs, shown, extra: prs.length - shown.length,
     searchUrl: searchUrl(entry.repository),
+    repositories: [entry.repository, ...also.map(a => a.repository)],
   };
 });
 const prTotal = projects.reduce((sum, p) => sum + p.prs.length, 0);
@@ -437,9 +449,9 @@ function plan(mobile) {
     const rule = first ? '' : line(y, W, inset); // no rule under the header: the panel flows straight in
     const head = logoTile(p, inset, y + (rowH - tile) / 2, tile)
       + nameLines.map((value, n) => text(textX, y + (nameLines.length > 1 ? 32 : (mobile ? 44 : 38)) + n * 22, value, nameSize, { 'font-weight': 600 })).join('')
-      + (mobile ? '' : text(textX, y + 60, p.repository, 14.5, { fill: C.muted, 'font-weight': 500 }));
+      + (mobile ? '' : text(textX, y + 60, p.repositories.join(' · '), 14.5, { fill: C.muted, 'font-weight': 500 }));
     slices.push({ name: p.slug + '-info', win: { x0: 0, y0: y, w: infoW, h: rowH }, w: pct(infoW),
-      items: rule + head, label: p.name + ' (' + p.repository + ')' });
+      items: rule + head, label: p.name + ' (' + p.repositories.join(', ') + ')' });
     const top = y + (rowH - pillH) / 2;
     p.shown.forEach((pr, k) => {
       const x0 = infoW + k * cellW, w = k === p.shown.length - 1 && !p.extra ? cellW + edgeW : cellW;
@@ -518,7 +530,10 @@ const readme = [
   '**A focused toolkit:** ' + config.tools.map(t => t.name).join(' · ') + '.', '',
   '**Selected open-source contributions:**', '',
   ...projects.map(p => '- [' + p.name + '](https://github.com/' + p.repository + ') - '
-    + p.prs.map(pr => '[#' + pr.number + '](' + pr.url + ')').join(', ')),
+    + (p.repositories.length > 1
+      ? p.repositories.map(repository => '[' + repository + '](https://github.com/' + repository + '): '
+        + p.prs.filter(pr => pr.repository === repository).map(pr => '[#' + pr.number + '](' + pr.url + ')').join(', ')).join('; ')
+      : p.prs.map(pr => '[#' + pr.number + '](' + pr.url + ')').join(', '))),
   '',
   '**Contact:** [Let’s talk](' + config.contact.email + ') · [LinkedIn](' + config.contact.linkedin + ') · [' + config.company + '](' + config.contact.website + ')', '',
   '**GitHub activity:** ' + count + ' contributions from ' + activity.range.from + ' through ' + activity.range.to + '.<br>',
