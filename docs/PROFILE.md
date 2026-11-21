@@ -35,7 +35,9 @@ node scripts/build.mjs
 
 Edit `profile.config.json` for identity, copy, palette, links, the five core tools and the
 open-source list (`openSource`: repository, display name, `logo` file in `assets/logos/` and the
-list of merged PR numbers; add a number when another PR is merged). The two biography lines are
+list of merged PR numbers; add a number when another PR is merged). An entry can group further repositories of the same owner under one row with
+`also` (`[{ "repository": "cdklabs/cdk-from-cfn", "prs": [1369, 1370] }]`): their PRs follow the main
+repository's pills, and the row shows every repository name. Rows are ordered by hand, most merged PRs first. The two biography lines are
 joined on desktop and arranged separately on mobile. Keep copy concise and inspect both layouts
 after changing it. `opticalScale` balances wide logo shapes without altering their geometry.
 `companyLogo` names the wordmark in `assets/brand/` that replaces the company name in the role line

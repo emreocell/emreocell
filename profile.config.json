@@ -22,10 +22,11 @@
   ],
   "openSource": [
     {"repository":"n8n-io/nod","name":"n8n Nod","logo":"n8n","prs":[1223,1227,1228,1232,1233,1234],"dynamic":true},
+    {"repository":"awslabs/mcp","name":"AWS","logo":"aws","prs":[5123],"also":[{"repository":"cdklabs/cdk-from-cfn","prs":[1369,1370]}]},
     {"repository":"stablyai/orca","name":"Orca","logo":"orca","prs":[44637,44762]},
     {"repository":"The-PR-Agent/pr-agent","name":"PR-Agent","logo":"pr-agent","prs":[5022,5023]},
     {"repository":"ministackorg/ministack","name":"Ministack","logo":"ministack","prs":[2745,2746]},
-    {"repository":"awslabs/mcp","name":"AWS MCP Servers","logo":"aws","prs":[5123]},
+    {"repository":"libp2p/js-libp2p","name":"js-libp2p","logo":"libp2p","prs":[3707]},
     {"repository":"repowise-dev/repowise","name":"RepoWise","logo":"repowise","prs":[5887]},
     {"repository":"TabularisDB/tabularis","name":"Tabularis","logo":"tabularis","prs":[1602]},
     {"repository":"HarnessRouter/harnessrouter","name":"HarnessRouter","logo":"harnessrouter","prs":[718]}
