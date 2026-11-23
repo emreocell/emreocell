@@ -442,12 +442,14 @@ function plan(mobile) {
   const pillGap = mobile ? 6 : 8, pillH = mobile ? 34 : 42, pillW = cellW - pillGap, rowH = mobile ? 76 : 80;
   const pct = w => (100 * w / W).toFixed(4) + '%';
   let first = true;
-  // Projects with a single merged PR share a row, two per row: "repo -> PR, repo -> PR". Everything
-  // else keeps its own full row. A lone single PR (odd count) also keeps its own row.
+  // Compact projects share a row, two per row: "repo -> PRs, repo -> PRs". A project is compact when it
+  // has at most two merged PRs, unless its config entry says "compact": false (use that for a project
+  // that will grow, so it keeps a full row). Everything else, and a lone leftover, keeps its own row.
+  const compact = p => p.prs.length <= 2 && p.compact !== false;
   const rows = [];
   let pending = null;
   for (const p of projects) {
-    if (p.prs.length === 1) {
+    if (compact(p)) {
       if (pending) { rows.push([pending, p]); pending = null; } else pending = p;
     } else {
       if (pending) { rows.push([pending]); pending = null; }
@@ -455,27 +457,41 @@ function plan(mobile) {
     }
   }
   if (pending) rows.push([pending]);
-  // One half of a shared row: the name cell, then a PR cell. The left half ends at the middle of the
-  // panel; the right half ends like a full row does (pill, then the right edge), so the pills line up.
-  const halfRow = (p, rowY, rule, { x0, infoW, padX, last }) => {
+  // The PR cell of a shared row. One PR per half keeps the usual cell. With two PRs in a half the cell
+  // is only as wide as the widest pill needs, as a share of the desktop width, so desktop and mobile
+  // cut the very same cells (mobile pills hold just the number, so they fit whatever the desktop needs).
+  const pairCell = pair => {
+    if (pair.every(p => p.shown.length <= 1)) return CELL;
+    const widest = Math.max(...pair.flatMap(p => p.shown.map(pr => measure('#' + pr.number, 20, 650))));
+    return Math.min(CELL, Math.ceil((15 + 8 + widest + 8 + 11 + 16 + 8) * 10 / 12) / 10);
+  };
+  // One half of a shared row: the name cell, then its PR cells. The left half ends at the middle of the
+  // panel; the right half ends like a full row, so its last pill lines up with the pills above.
+  const halfRow = (p, rowY, rule, { x0, infoW, padX, last, cell }) => {
     const textXp = x0 + padX + tile + (mobile ? 12 : 18), avail = infoW - (textXp - x0) - 8;
     let size = nameSize;
     while (size > 11 && measure(p.name, size, 600) > avail) size -= .5;
+    const repoText = p.repositories.join(' · ');
+    let repoSize = 14.5;
+    while (repoSize > 10 && measure(repoText, repoSize, 500) > avail) repoSize -= .25;
     const head = logoTile(p, x0 + padX, rowY + (rowH - tile) / 2, tile)
       + text(textXp, rowY + (mobile ? 44 : 38), p.name, size, { 'font-weight': 600 })
-      + (mobile ? '' : text(textXp, rowY + 60, p.repositories.join(' · '), 14.5, { fill: C.muted, 'font-weight': 500 }));
+      + (mobile ? '' : text(textXp, rowY + 60, repoText, repoSize, { fill: C.muted, 'font-weight': 500 }));
     slices.push({ name: p.slug + '-info', win: { x0, y0: rowY, w: infoW, h: rowH }, w: pct(infoW),
       items: rule + head, label: p.name + ' (' + p.repositories.join(', ') + ')' });
-    const pr = p.shown[0], px = x0 + infoW, w = last ? cellW + edgeW : cellW;
-    slices.push({ name: p.slug + '-pr0', win: { x0: px, y0: rowY, w, h: rowH }, w: pct(w),
-      items: rule + prPill(px + pillGap / 2, rowY + (rowH - pillH) / 2, pillW, pillH, pr.number, mobile),
-      href: pr.url, label: p.name + ' merged pull request #' + pr.number });
+    p.shown.forEach((pr, k) => {
+      const px = x0 + infoW + k * cell, w = last && k === p.shown.length - 1 ? cell + edgeW : cell;
+      slices.push({ name: p.slug + '-pr' + k, win: { x0: px, y0: rowY, w, h: rowH }, w: pct(w),
+        items: rule + prPill(px + pillGap / 2, rowY + (rowH - pillH) / 2, cell - pillGap, pillH, pr.number, mobile),
+        href: pr.url, label: p.name + ' merged pull request #' + pr.number });
+    });
   };
   for (const row of rows) {
     if (row.length === 2) {
       const rule = first ? '' : line(y, W, inset), mid = W / 2;
-      halfRow(row[0], y, rule, { x0: 0, infoW: mid - cellW, padX: inset, last: false });
-      halfRow(row[1], y, rule, { x0: mid, infoW: mid - cellW - edgeW, padX: mobile ? 18 : 40, last: true });
+      const cell = W * pairCell(row) / 100;
+      halfRow(row[0], y, rule, { x0: 0, infoW: mid - row[0].shown.length * cell, padX: inset, last: false, cell });
+      halfRow(row[1], y, rule, { x0: mid, infoW: mid - row[1].shown.length * cell - edgeW, padX: mobile ? 18 : 40, last: true, cell });
       y += rowH;
       first = false;
       continue;

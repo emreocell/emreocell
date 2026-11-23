@@ -65,14 +65,19 @@ referenced. This matters: GitHub's image proxy caches by URL but fetches from `r
 `raw` serves a changed file under an unchanged name stale for several minutes, which would mix old
 and new slices. A new name per content makes that impossible.
 
-## Projects with one merged PR
+## Compact projects (up to two merged PRs)
 
-Projects with exactly one merged PR are shown two per row ("repo, PR" next to "repo, PR") instead of
-one per row, in the order they appear in `openSource`. Each half has its own name cell and PR cell;
-the left half ends at the middle of the panel and the right half ends like a full row, so its pill
-lines up with the pills above. A single leftover project keeps a full row. Projects with more PRs
-(or `also` repositories) always get a full row, so keep the one-PR projects together at the end of
-the list. When a project gets a second PR it moves to a full row by itself.
+Projects with one or two merged PRs share a row, two per row ("repo, PRs" next to "repo, PRs"),
+in the order they appear in `openSource`. Each half has its own name cell and PR cells; the left
+half ends at the middle of the panel and the right half ends like a full row, so its last pill lines
+up with the pills above. With one PR per half the usual cell width is used; with two PRs in a half
+the cells shrink to what the widest pill needs (as a share of the desktop width, so desktop and
+mobile still cut the same cells). A single leftover project keeps a full row.
+
+A project with more than two PRs, or with `also` repositories, always gets a full row. To keep a
+project on a full row on purpose (for example one that will get more PRs), set `"compact": false` on
+its `openSource` entry. Keep compact projects together at the end of the list, since only
+neighbouring ones are paired. When a project gets a third PR it moves to a full row by itself.
 
 ## Projects with many merged PRs
 
