@@ -7,7 +7,7 @@
 <summary>Profile in plain text</summary>
 
 **Emre Öcel** · Computer Engineer · Samsun, Türkiye<br>
-Full Stack Developer at [Webioo](https://webioo.com.tr/).
+Full Stack Developer at [Webioo](https://www.webioo.com.tr/).
 
 I build web products, AI agents and the systems behind them.
 
