@@ -1,20 +1,15 @@
 {
   "schemaVersion": 1,
   "login": "emreocell",
-  "updatedAt": "2026-11-27T12:42:06.989Z",
+  "updatedAt": "2026-11-28T11:57:35.494Z",
   "range": {
-    "from": "2025-11-28",
-    "to": "2026-11-27"
+    "from": "2025-11-29",
+    "to": "2026-11-28"
   },
-  "totalContributions": 4954,
+  "totalContributions": 5100,
   "weeks": [
     {
       "contributionDays": [
-        {
-          "date": "2025-11-28",
-          "contributionCount": 0,
-          "weekday": 5
-        },
         {
           "date": "2025-11-29",
           "contributionCount": 0,
@@ -2040,8 +2035,13 @@
         },
         {
           "date": "2026-11-27",
-          "contributionCount": 109,
+          "contributionCount": 195,
           "weekday": 5
+        },
+        {
+          "date": "2026-11-28",
+          "contributionCount": 60,
+          "weekday": 6
         }
       ]
     }
